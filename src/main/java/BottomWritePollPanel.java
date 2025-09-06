@@ -1,11 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class BottomPollCreationPanel extends JPanel{
+public class BottomWritePollPanel extends JPanel{
     private JButton backButton;
 
     // Constructor......................................................................................................
-    public BottomPollCreationPanel() {
+    public BottomWritePollPanel() {
         // Setting up the panel:
         this.setBounds(0, Constants.QUESTION_PANEL_HEIGHT * 3, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT - Constants.QUESTION_PANEL_HEIGHT * 3);
         this.setBackground(Color.WHITE);

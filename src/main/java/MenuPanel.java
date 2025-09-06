@@ -5,6 +5,8 @@ public class MenuPanel extends JPanel {
     private Button writePollButton;
     private Button gptPollButton;
     private Button exitButton;
+    private int writePollButtonYLocation = 175;
+    private int gptPollButtonYLocation = 300;
 
     // Constructor......................................................................................................
     public MenuPanel() {
@@ -30,28 +32,35 @@ public class MenuPanel extends JPanel {
 
         // Setting up the buttons:
         Font buttonExplanationFont = new Font("Arial", Font.PLAIN, 15);
-        this.writePollButton = new Button("Write your own", 50, 175);
+        // Write poll button:
+        this.writePollButton = new Button("Write your own", 50, writePollButtonYLocation);
         this.writePollButton.setBackground(Color.WHITE);
+        // Write poll button.
         // Write poll button explanation:
         JLabel writeExplanation = new JLabel ("Create the poll in your own words.");
         writeExplanation.setFont(buttonExplanationFont);
-        writeExplanation.setBounds(50 + Constants.MAIN_MENU_BUTTON_WIDTH + 25, 175 + Constants.MAIN_MENU_BUTTON_HEIGHT - 15, Constants.WINDOW_WIDTH, 15);
+        writeExplanation.setBounds(50 + Constants.MAIN_MENU_BUTTON_WIDTH + 25, writePollButtonYLocation + Constants.MAIN_MENU_BUTTON_HEIGHT - 15, Constants.WINDOW_WIDTH, 15);
         this.add(writeExplanation);
         // Write poll button explanation.
-        this.gptPollButton = new Button("Use chatGPT", 50, 300);
+        // GPT poll button:
+        this.gptPollButton = new Button("Use chatGPT", 50, gptPollButtonYLocation);
         this.gptPollButton.setBackground(Color.WHITE);
+        // GPT poll button.
         // GPT poll button explanation:
         JLabel gptExplanation = new JLabel ("Ask chatGPT for help creating the poll.");
         gptExplanation.setFont(buttonExplanationFont);
-        gptExplanation.setBounds(50 + Constants.MAIN_MENU_BUTTON_WIDTH + 25, 300 + Constants.MAIN_MENU_BUTTON_HEIGHT - 15, Constants.WINDOW_WIDTH, 15);
+        gptExplanation.setBounds(50 + Constants.MAIN_MENU_BUTTON_WIDTH + 25, gptPollButtonYLocation + Constants.MAIN_MENU_BUTTON_HEIGHT - 15, Constants.WINDOW_WIDTH, 15);
         this.add(gptExplanation);
         // GPT poll button explanation.
+        // Exit button:
         this.exitButton = new Button("Exit", 50, 425);
         this.exitButton.setBackground(Color.WHITE);
+        // Exit button.
+        // Setting up the buttons.
+
         this.add(writePollButton);
         this.add(gptPollButton);
         this.add(exitButton);
-        // Setting up the buttons.
     }
 
     // toString.........................................................................................................
