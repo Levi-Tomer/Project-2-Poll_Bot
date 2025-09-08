@@ -1,5 +1,3 @@
-import org.w3c.dom.ls.LSOutput;
-
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,45 +99,51 @@ public class Frame extends JFrame {
 
     /*
     Aid method to be used with the question and answers returning from the "write poll" GUI.
-    The method makes sure the question or the answers are not null and that the string isn't empty.
+    The method makes sure the questions and the answers are not null and that the string isn't empty.
     */
     private boolean validatingPollText (String text) {
         return text != null && !text.isEmpty();
     }
 
     /*
-    This method is for identifying the number of questions and possible answers to be published in the poll.
-    It arranges the information received from the poll creation GUI panels and calls the sending poll method from the
-    TelegramBot class.
+    Aid method that receives the options for a question to be published in the poll, and creating an ArrayList that
+    will be returned and validated in the "publishPoll" method before publishing.
+    */
+    private ArrayList validatingAnswersForPoll(String o1, String o2, String o3, String o4) {
+        ArrayList<String> options = new ArrayList<>(4);
+        if (validatingPollText(o1)) {
+            options.add(o1);
+        }
+        if (validatingPollText(o2)) {
+            options.add(o2);
+        }
+        if (validatingPollText(o3)) {
+            options.add(o3);
+        }
+        if (validatingPollText(o4)) {
+            options.add(o4);
+        }
+        return options;
+    }
+
+    /*
+    This method is identifying the number of questions and possible options from the "write your own"
+    to be published in the poll.
+    It arranges the information received from the poll creation GUI panel, validate it, aware user in case of a problem
+    and in case everything is ok - calls the sendPoll method from the TelegramBot class.
     */
     private void publishPoll() {
         System.out.println("Reached the method from the Frame class.");
         // Creating and validating poll question 1 and answers:
-        if (validatingPollText(questionPanelTop.getPollQuestion().getText())) {
-            String pollQuestion1 = this.questionPanelTop.getPollQuestion().getText();
-            List<String> optionsQuestion1 = new ArrayList<>(4);
-            if (validatingPollText(this.questionPanelTop.getAnswer1().getText())) {
-                optionsQuestion1.add(this.questionPanelTop.getAnswer1().getText());
-                System.out.println("question 1 answer 1 added");
-            }
-            if (validatingPollText(this.questionPanelTop.getAnswer2().getText())) {
-                optionsQuestion1.add(this.questionPanelTop.getAnswer2().getText());
-                System.out.println("question 1 answer 2 added");
-            }
-            if (this.questionPanelTop.isPossibleAnswer3()) {
-                if (validatingPollText(this.questionPanelTop.getAnswer3().getText())) {
-                    optionsQuestion1.add(this.questionPanelTop.getAnswer3().getText());
-                    System.out.println("question 1 answer 3 added");
-                }
-            }
-            if (this.questionPanelTop.isPossibleAnswer4()) {
-                if (validatingPollText(this.questionPanelTop.getAnswer4().getText())) {
-                    optionsQuestion1.add(this.questionPanelTop.getAnswer4().getText());
-                    System.out.println("question 1 answer 4 added");
-                }
-            }
-            if (optionsQuestion1.size() >= 2) {
-                this.bot.sendPoll(pollQuestion1, optionsQuestion1);
+        String question1 = this.questionPanelTop.getPollQuestion().getText();
+        if (validatingPollText(question1)) {
+            String q1Option1 = this.questionPanelTop.getAnswer1().getText();
+            String q1Option2 = this.questionPanelTop.getAnswer2().getText();
+            String q1Option3 = this.questionPanelTop.getAnswer3().getText();
+            String q1Option4 = this.questionPanelTop.getAnswer4().getText();
+            List<String> question1Options = validatingAnswersForPoll(q1Option1, q1Option2, q1Option3, q1Option4);
+            if (question1Options.size() >= 2) {
+                this.bot.sendPoll(question1, question1Options);
             } else {
                 JOptionPane.showMessageDialog(this,
                         "You need to provide at least 2 possible options for question 1.",
@@ -154,32 +158,15 @@ public class Frame extends JFrame {
 
         // Creating and validating poll question 2 and answers:
         if (this.questionPanelMiddle.isAdditionalQuestion()) {
-            if (validatingPollText(questionPanelMiddle.getPollQuestion().getText())) {
-                System.out.println("Added the second question.");
-                String pollQuestion2 = this.questionPanelMiddle.getPollQuestion().getText();
-                List<String> optionsQuestion2 = new ArrayList<>(4);
-                if (validatingPollText(this.questionPanelMiddle.getAnswer1().getText())) {
-                    optionsQuestion2.add(this.questionPanelMiddle.getAnswer1().getText());
-                    System.out.println("question 2 answer 1 added");
-                }
-                if (validatingPollText(this.questionPanelMiddle.getAnswer2().getText())) {
-                    optionsQuestion2.add(this.questionPanelMiddle.getAnswer2().getText());
-                    System.out.println("question 2 answer 2 added");
-                }
-                if (this.questionPanelMiddle.isPossibleAnswer3()) {
-                    if (validatingPollText(this.questionPanelMiddle.getAnswer3().getText())) {
-                        optionsQuestion2.add(this.questionPanelMiddle.getAnswer3().getText());
-                        System.out.println("question 2 answer 3 added");
-                    }
-                }
-                if (this.questionPanelMiddle.isPossibleAnswer4()) {
-                    if (validatingPollText(this.questionPanelMiddle.getAnswer4().getText())) {
-                        optionsQuestion2.add(this.questionPanelMiddle.getAnswer4().getText());
-                        System.out.println("question 2 answer 4 added");
-                    }
-                }
-                if (optionsQuestion2.size() >= 2) {
-                    this.bot.sendPoll(pollQuestion2, optionsQuestion2);
+            String question2 = this.questionPanelMiddle.getPollQuestion().getText();
+            if (validatingPollText(question2)) {
+                String q2Option1 = this.questionPanelMiddle.getAnswer1().getText();
+                String q2Option2 = this.questionPanelMiddle.getAnswer2().getText();
+                String q2Option3 = this.questionPanelMiddle.getAnswer3().getText();
+                String q2Option4 = this.questionPanelMiddle.getAnswer4().getText();
+                List<String> question2Options = validatingAnswersForPoll(q2Option1, q2Option2, q2Option3, q2Option4);
+                if (question2Options.size() >= 2) {
+                    this.bot.sendPoll(question2, question2Options);
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "You need to provide at least 2 possible options for question 2.",
@@ -195,32 +182,15 @@ public class Frame extends JFrame {
 
         // Creating and validating poll question 3 and answers:
         if (this.questionPanelBottom.isAdditionalQuestion()) {
-            if (validatingPollText(questionPanelBottom.getPollQuestion().getText())) {
-                System.out.println("Added the third question.");
-                String pollQuestion3 = this.questionPanelBottom.getPollQuestion().getText();
-                List<String> optionsQuestion3 = new ArrayList<>(4);
-                if (validatingPollText(this.questionPanelBottom.getAnswer1().getText())) {
-                    optionsQuestion3.add(this.questionPanelBottom.getAnswer1().getText());
-                    System.out.println("question 3 answer 1 added");
-                }
-                if (validatingPollText(this.questionPanelBottom.getAnswer2().getText())) {
-                    optionsQuestion3.add(this.questionPanelBottom.getAnswer2().getText());
-                    System.out.println("question 3 answer 2 added");
-                }
-                if (this.questionPanelBottom.isPossibleAnswer3()) {
-                    if (validatingPollText(this.questionPanelBottom.getAnswer3().getText())) {
-                        optionsQuestion3.add(this.questionPanelBottom.getAnswer3().getText());
-                        System.out.println("question 3 answer 3 added");
-                    }
-                }
-                if (this.questionPanelBottom.isPossibleAnswer4()) {
-                    if (validatingPollText(this.questionPanelBottom.getAnswer4().getText())) {
-                        optionsQuestion3.add(this.questionPanelBottom.getAnswer4().getText());
-                        System.out.println("question 3 answer 4 added");
-                    }
-                }
-                if (optionsQuestion3.size() >= 2) {
-                    this.bot.sendPoll(pollQuestion3, optionsQuestion3);
+            String question3 = this.questionPanelBottom.getPollQuestion().getText();
+            if (validatingPollText(question3)) {
+                String q3Option1 = this.questionPanelBottom.getAnswer1().getText();
+                String q3Option2 = this.questionPanelBottom.getAnswer2().getText();
+                String q3Option3 = this.questionPanelBottom.getAnswer3().getText();
+                String q3Option4 = this.questionPanelBottom.getAnswer4().getText();
+                List<String> question3Options = validatingAnswersForPoll(q3Option1, q3Option2, q3Option3, q3Option4);
+                if (question3Options.size() >= 2) {
+                    this.bot.sendPoll(question3, question3Options);
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "You need to provide at least 2 possible options for question 3.",
