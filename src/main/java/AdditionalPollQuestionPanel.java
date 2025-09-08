@@ -3,11 +3,11 @@ import java.awt.*;
 
 public class AdditionalPollQuestionPanel extends JPanel {
     private boolean additionalQuestion = false;
-    private String pollQuestion;
-    private String answer1;
-    private String answer2;
-    private String answer3;
-    private String answer4;
+    private JTextField pollQuestion;
+    private JTextField answer1;
+    private JTextField answer2;
+    private JTextField answer3;
+    private JTextField answer4;
     private boolean possibleAnswer3 = false;
     private boolean possibleAnswer4 = false;
     // Constructor......................................................................................................
@@ -44,41 +44,36 @@ public class AdditionalPollQuestionPanel extends JPanel {
         // Creating and adding headline.
 
         // Creating and adding textbox for the question:
-        JTextField question2Text = new JTextField();
-        question2Text.setBounds(50, Constants.QUESTION_PANEL_HEIGHT / 2 - 15, Constants.QUESTION_TEXTBOX_WIDTH, 30);
-        question2Text.setVisible(false);
-        this.add(question2Text);
-        this.pollQuestion = question2Text.getText();
+        this.pollQuestion = new JTextField();
+        this.pollQuestion.setBounds(50, Constants.QUESTION_PANEL_HEIGHT / 2 - 15, Constants.QUESTION_TEXTBOX_WIDTH, 30);
+        this.pollQuestion.setVisible(false);
+        this.add(this.pollQuestion);
         // Creating and adding textbox for the question.
 
         // creating and adding textboxes for the possible answers:
         // Answer 1:
-        JTextField answer1Text = new JTextField();
-        answer1Text.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42, Constants.ANSWER_TEXTBOX_WIDTH, 30);
-        answer1Text.setVisible(false);
-        this.add(answer1Text);
-        this.answer1 = answer1Text.getText();
+        this.answer1 = new JTextField();
+        this.answer1.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer1.setVisible(false);
+        this.add(this.answer1);
         // Answer 1.
         // Answer 2:
-        JTextField answer2Text = new JTextField();
-        answer2Text.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42 + 30, Constants.ANSWER_TEXTBOX_WIDTH, 30);
-        answer2Text.setVisible(false);
-        this.add(answer2Text);
-        this.answer2 = answer2Text.getText();
+        this.answer2 = new JTextField();
+        this.answer2.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42 + 30, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer2.setVisible(false);
+        this.add(this.answer2);
         // Answer 2.
         // Answer 3:
-        JTextField answer3Text = new JTextField();
-        answer3Text.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42 + 30 * 2, Constants.ANSWER_TEXTBOX_WIDTH, 30);
-        answer3Text.setVisible(false);
-        this.add(answer3Text);
-        this.answer3 = answer3Text.getText();
+        this.answer3 = new JTextField();
+        this.answer3.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42 + 30 * 2, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer3.setVisible(false);
+        this.add(this.answer3);
         // Answer 3.
         // Answer 4:
-        JTextField answer4Text = new JTextField();
-        answer4Text.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42 + 30 * 3, Constants.ANSWER_TEXTBOX_WIDTH, 30);
-        answer4Text.setVisible(false);
-        this.add(answer4Text);
-        this.answer4 = answer4Text.getText();
+        this.answer4 = new JTextField();
+        this.answer4.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50, 42 + 30 * 3, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer4.setVisible(false);
+        this.add(this.answer4);
         // Answer 4.
         // Creating and adding textboxes for the possible answers.
 
@@ -116,10 +111,10 @@ public class AdditionalPollQuestionPanel extends JPanel {
         addQuestion2Button.addActionListener(e -> {
             addQuestion2Button.setVisible(false);
             questionHeadline.setVisible(true);
-            question2Text.setVisible(true);
+            this.pollQuestion.setVisible(true);
             removeQuestion2Button.setVisible(true);
-            answer1Text.setVisible(true);
-            answer2Text.setVisible(true);
+            this.answer1.setVisible(true);
+            this.answer2.setVisible(true);
             addAnswer3Button.setVisible(true);
             addAnswer4Button.setVisible(true);
             this.additionalQuestion = true;
@@ -128,11 +123,11 @@ public class AdditionalPollQuestionPanel extends JPanel {
         removeQuestion2Button.addActionListener(e -> {
             removeQuestion2Button.setVisible(false);
             questionHeadline.setVisible(false);
-            question2Text.setVisible(false);
-            answer1Text.setVisible(false);
-            answer2Text.setVisible(false);
-            answer3Text.setVisible(false);
-            answer4Text.setVisible(false);
+            this.pollQuestion.setVisible(false);
+            this.answer1.setVisible(false);
+            this.answer2.setVisible(false);
+            this.answer3.setVisible(false);
+            this.answer4.setVisible(false);
             addAnswer3Button.setVisible(false);
             removeAnswer3Button.setVisible(false);
             addAnswer4Button.setVisible(false);
@@ -144,13 +139,13 @@ public class AdditionalPollQuestionPanel extends JPanel {
         addAnswer3Button.addActionListener(e -> {
             addAnswer3Button.setVisible(false);
             removeAnswer3Button.setVisible(true);
-            answer3Text.setVisible(true);
+            this.answer3.setVisible(true);
             this.possibleAnswer3 = true;
         });
 
         removeAnswer3Button.addActionListener(e -> {
             removeAnswer3Button.setVisible(false);
-            answer3Text.setVisible(false);
+            this.answer3.setVisible(false);
             addAnswer3Button.setVisible(true);
             this.possibleAnswer3 = false;
         });
@@ -158,13 +153,13 @@ public class AdditionalPollQuestionPanel extends JPanel {
         addAnswer4Button.addActionListener(e -> {
             addAnswer4Button.setVisible(false);
             removeAnswer4Button.setVisible(true);
-            answer4Text.setVisible(true);
+            this.answer4.setVisible(true);
             this.possibleAnswer4 = true;
         });
 
         removeAnswer4Button.addActionListener(e -> {
             removeAnswer4Button.setVisible(false);
-            answer4Text.setVisible(false);
+            this.answer4.setVisible(false);
             addAnswer4Button.setVisible(true);
             this.possibleAnswer4 = false;
         });
@@ -179,23 +174,23 @@ public class AdditionalPollQuestionPanel extends JPanel {
         return additionalQuestion;
     }
 
-    public String getPollQuestion() {
+    public JTextField getPollQuestion() {
         return pollQuestion;
     }
 
-    public String getAnswer1() {
+    public JTextField getAnswer1() {
         return answer1;
     }
 
-    public String getAnswer2() {
+    public JTextField getAnswer2() {
         return answer2;
     }
 
-    public String getAnswer3() {
+    public JTextField getAnswer3() {
         return answer3;
     }
 
-    public String getAnswer4() {
+    public JTextField getAnswer4() {
         return answer4;
     }
 
