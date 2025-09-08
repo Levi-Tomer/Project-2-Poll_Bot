@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Frame extends JFrame {
     private MenuPanel menuPanel;
@@ -53,6 +55,10 @@ public class Frame extends JFrame {
         // Back to main menu from "Write poll" menu:
         this.bottomPollCreationPanel.getBackButton().addActionListener(e -> moveBackToMainMenuFromWritePollInterface());
         // Back to main menu from "Write poll" menu.
+
+        // "Publish poll" button from "BottomWritePollPanel" class:
+        this.bottomPollCreationPanel.getPublishButton().addActionListener(e -> publishPoll());
+        // "Publish poll" button from "BottomWritePollPanel" class.
     }
 
     // toString.........................................................................................................
@@ -89,6 +95,69 @@ public class Frame extends JFrame {
         this.questionPanelBottom.setVisible(false);
         this.bottomPollCreationPanel.setVisible(false);
         this.menuPanel.setVisible(true);
+    }
+
+    /*
+    This method is for identifying the number of questions and possible answers to be published in the poll.
+    It arranges the information received from the poll creation GUI panels and calls the sending poll method from the
+    TelegramBot class.
+    */
+    private void publishPoll() {
+        System.out.println("Reached the method from the Frame class.");
+        // Creating poll question 1:
+        String pollQuestion1 = this.questionPanelTop.getPollQuestion();
+        List<String> optionsQuestion1 = new ArrayList<>(4);
+        optionsQuestion1.add(this.questionPanelTop.getAnswer1());
+        optionsQuestion1.add(this.questionPanelTop.getAnswer2());
+        System.out.println("Created the first question.");
+        if (this.questionPanelTop.isPossibleAnswer3()) {
+            optionsQuestion1.add(this.questionPanelTop.getAnswer3());
+            System.out.println("Added third option to question one.");
+        }
+        if (this.questionPanelTop.isPossibleAnswer4()) {
+            optionsQuestion1.add(this.questionPanelTop.getAnswer4());
+            System.out.println("Added fourth option to question one.");
+        }
+        this.bot.sendPoll(pollQuestion1, optionsQuestion1);
+        // Creating poll question 1.
+
+        // Creating poll question 2:
+        if (this.questionPanelMiddle.isAdditionalQuestion()) {
+            System.out.println("Added the second question.");
+            String pollQuestion2 = this.questionPanelMiddle.getPollQuestion();
+            List<String> optionsQuestion2 = new ArrayList<>(4);
+            optionsQuestion2.add(this.questionPanelMiddle.getAnswer1());
+            optionsQuestion2.add(this.questionPanelMiddle.getAnswer2());
+            if (this.questionPanelMiddle.isPossibleAnswer3()) {
+                optionsQuestion2.add(this.questionPanelMiddle.getAnswer3());
+                System.out.println("Added third option to question two.");
+            }
+            if (this.questionPanelMiddle.isPossibleAnswer4()) {
+                optionsQuestion2.add(this.questionPanelMiddle.getAnswer4());
+                System.out.println("Added fourth option to question two.");
+            }
+            this.bot.sendPoll(pollQuestion2, optionsQuestion2);
+        }
+        // Creating poll question 2.
+
+        // Creating poll question 3:
+        if (this.questionPanelBottom.isAdditionalQuestion()) {
+            System.out.println("Added the third question.");
+            String pollQuestion3 = this.questionPanelBottom.getPollQuestion();
+            List<String> optionsQuestion3 = new ArrayList<>(4);
+            optionsQuestion3.add(this.questionPanelBottom.getAnswer1());
+            optionsQuestion3.add(this.questionPanelBottom.getAnswer2());
+            if (this.questionPanelBottom.isPossibleAnswer3()) {
+                optionsQuestion3.add(this.questionPanelBottom.getAnswer3());
+                System.out.println("Added third option to question three.");
+            }
+            if (this.questionPanelBottom.isPossibleAnswer4()) {
+                optionsQuestion3.add(this.questionPanelBottom.getAnswer4());
+                System.out.println("Added fourth option to question two.");
+            }
+            this.bot.sendPoll(pollQuestion3, optionsQuestion3);
+        }
+        // Creating poll question 3.
     }
 
     // Getters & Setters................................................................................................
