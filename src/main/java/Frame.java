@@ -65,7 +65,7 @@ public class Frame extends JFrame {
 
     // Methods..........................................................................................................
     private void moveToWritePollInterface() {
-        if (false) {    // this.bot.getSubscribers().size() < 3
+        if (false) { // !!!!!!!!!!!Attention! This statement should be: "if (this.bot.getSubscribers().size() < 3)" but it's not set for testing purposes.
             JOptionPane.showMessageDialog(this,
                     "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
@@ -101,7 +101,7 @@ public class Frame extends JFrame {
     Aid method to be used with the question and answers returning from the "write poll" GUI.
     The method makes sure the questions and the answers are not null and that the string isn't empty.
     */
-    private boolean validatingPollText (String text) {
+    private boolean validatePollInput(String text) {
         return text != null && !text.isEmpty();
     }
 
@@ -109,18 +109,18 @@ public class Frame extends JFrame {
     Aid method that receives the options for a question to be published in the poll, and creating an ArrayList that
     will be returned and validated in the "publishPoll" method before publishing.
     */
-    private ArrayList validatingAnswersForPoll(String o1, String o2, String o3, String o4) {
+    private ArrayList validateAnswerOptions(String o1, String o2, String o3, String o4) {
         ArrayList<String> options = new ArrayList<>(4);
-        if (validatingPollText(o1)) {
+        if (validatePollInput(o1)) {
             options.add(o1);
         }
-        if (validatingPollText(o2)) {
+        if (validatePollInput(o2)) {
             options.add(o2);
         }
-        if (validatingPollText(o3)) {
+        if (validatePollInput(o3)) {
             options.add(o3);
         }
-        if (validatingPollText(o4)) {
+        if (validatePollInput(o4)) {
             options.add(o4);
         }
         return options;
@@ -136,12 +136,12 @@ public class Frame extends JFrame {
         System.out.println("Reached the method from the Frame class.");
         // Creating and validating poll question 1 and answers:
         String question1 = this.questionPanelTop.getPollQuestion().getText();
-        if (validatingPollText(question1)) {
+        if (validatePollInput(question1)) {
             String q1Option1 = this.questionPanelTop.getAnswer1().getText();
             String q1Option2 = this.questionPanelTop.getAnswer2().getText();
             String q1Option3 = this.questionPanelTop.getAnswer3().getText();
             String q1Option4 = this.questionPanelTop.getAnswer4().getText();
-            List<String> question1Options = validatingAnswersForPoll(q1Option1, q1Option2, q1Option3, q1Option4);
+            List<String> question1Options = validateAnswerOptions(q1Option1, q1Option2, q1Option3, q1Option4);
             if (question1Options.size() >= 2) {
                 this.bot.sendPoll(question1, question1Options);
             } else {
@@ -159,12 +159,12 @@ public class Frame extends JFrame {
         // Creating and validating poll question 2 and answers:
         if (this.questionPanelMiddle.isAdditionalQuestion()) {
             String question2 = this.questionPanelMiddle.getPollQuestion().getText();
-            if (validatingPollText(question2)) {
+            if (validatePollInput(question2)) {
                 String q2Option1 = this.questionPanelMiddle.getAnswer1().getText();
                 String q2Option2 = this.questionPanelMiddle.getAnswer2().getText();
                 String q2Option3 = this.questionPanelMiddle.getAnswer3().getText();
                 String q2Option4 = this.questionPanelMiddle.getAnswer4().getText();
-                List<String> question2Options = validatingAnswersForPoll(q2Option1, q2Option2, q2Option3, q2Option4);
+                List<String> question2Options = validateAnswerOptions(q2Option1, q2Option2, q2Option3, q2Option4);
                 if (question2Options.size() >= 2) {
                     this.bot.sendPoll(question2, question2Options);
                 } else {
@@ -183,12 +183,12 @@ public class Frame extends JFrame {
         // Creating and validating poll question 3 and answers:
         if (this.questionPanelBottom.isAdditionalQuestion()) {
             String question3 = this.questionPanelBottom.getPollQuestion().getText();
-            if (validatingPollText(question3)) {
+            if (validatePollInput(question3)) {
                 String q3Option1 = this.questionPanelBottom.getAnswer1().getText();
                 String q3Option2 = this.questionPanelBottom.getAnswer2().getText();
                 String q3Option3 = this.questionPanelBottom.getAnswer3().getText();
                 String q3Option4 = this.questionPanelBottom.getAnswer4().getText();
-                List<String> question3Options = validatingAnswersForPoll(q3Option1, q3Option2, q3Option3, q3Option4);
+                List<String> question3Options = validateAnswerOptions(q3Option1, q3Option2, q3Option3, q3Option4);
                 if (question3Options.size() >= 2) {
                     this.bot.sendPoll(question3, question3Options);
                 } else {
