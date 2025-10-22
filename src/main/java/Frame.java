@@ -93,6 +93,14 @@ public class Frame extends JFrame {
         }
     }
 
+    private void moveToResultPanel() {
+        this.resultPanel.setVisible(true);
+        this.questionPanelTop.setVisible(false);
+        this.questionPanelMiddle.setVisible(false);
+        this.questionPanelBottom.setVisible(false);
+        this.bottomPollCreationPanel.setVisible(false);
+    }
+
     private void moveBackToMainMenuFromWritePollInterface() {
         this.questionPanelTop.setVisible(false);
         this.questionPanelMiddle.setVisible(false);
@@ -138,27 +146,29 @@ public class Frame extends JFrame {
     */
     private void publishPoll() {
         System.out.println("Reached the method from the Frame class.");
-
+        // Getting the delay text for the publication delay:
+        int userDelay = 0;
+        String delayMinutesText = this.bottomPollCreationPanel.getDelayPublication().getText();
+        if (delayMinutesText != null && !delayMinutesText.isEmpty() && isAllDigits(delayMinutesText)) {
+            userDelay = Integer.parseInt(delayMinutesText);
+        }
+        int publicationDelayMinutes = Math.max(0, userDelay);
+        // Getting the delay text for the publication delay.
 
         // Creating and validating poll question 1 and answers:
         String question1 = this.questionPanelTop.getPollQuestion().getText();
+        List<String> question1Options = new ArrayList<>(4);
         if (validatePollInput(question1)) {
             String q1Option1 = this.questionPanelTop.getAnswer1().getText();
             String q1Option2 = this.questionPanelTop.getAnswer2().getText();
             String q1Option3 = this.questionPanelTop.getAnswer3().getText();
             String q1Option4 = this.questionPanelTop.getAnswer4().getText();
-            List<String> question1Options = validateAnswerOptions(q1Option1, q1Option2, q1Option3, q1Option4);
+            question1Options = validateAnswerOptions(q1Option1, q1Option2, q1Option3, q1Option4);
             if (question1Options.size() >= 2) {
+                moveToResultPanel();
+                // Enter Delay here
                 this.bot.sendPoll(question1, question1Options);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "You need to provide at least 2 possible options for question 1.",
-                        "Error: not enough options", JOptionPane.PLAIN_MESSAGE);
             }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "You left question 1 empty. Please write your question in the textbox.",
-                    "Error: question 1 empty", JOptionPane.PLAIN_MESSAGE);
         }
         // Creating and validating poll question 1 and answers.
 
@@ -171,17 +181,9 @@ public class Frame extends JFrame {
                 String q2Option3 = this.questionPanelMiddle.getAnswer3().getText();
                 String q2Option4 = this.questionPanelMiddle.getAnswer4().getText();
                 List<String> question2Options = validateAnswerOptions(q2Option1, q2Option2, q2Option3, q2Option4);
-                if (question2Options.size() >= 2) {
+                if (question2Options.size() >= 2 && question1Options.size() >= 2) {
                     this.bot.sendPoll(question2, question2Options);
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                            "You need to provide at least 2 possible options for question 2.",
-                            "Error: not enough options", JOptionPane.PLAIN_MESSAGE);
                 }
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "You left question 2 empty. Please write your question in the textbox or click the \"-\" button next to it to remove it.",
-                        "Error: question 2 empty", JOptionPane.PLAIN_MESSAGE);
             }
         }
         // Creating and validating poll question 2 and answers.
@@ -195,17 +197,9 @@ public class Frame extends JFrame {
                 String q3Option3 = this.questionPanelBottom.getAnswer3().getText();
                 String q3Option4 = this.questionPanelBottom.getAnswer4().getText();
                 List<String> question3Options = validateAnswerOptions(q3Option1, q3Option2, q3Option3, q3Option4);
-                if (question3Options.size() >= 2) {
+                if (question3Options.size() >= 2 && question1Options.size() >= 2) {
                     this.bot.sendPoll(question3, question3Options);
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                            "You need to provide at least 2 possible options for question 3.",
-                            "Error: not enough options", JOptionPane.PLAIN_MESSAGE);
                 }
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "You left question 3 empty. Please write your question in the textbox or click the \"-\" button next to it to remove it.",
-                        "Error: question 3 empty", JOptionPane.PLAIN_MESSAGE);
             }
         }
         // Creating and validating poll question 3 and answers.
