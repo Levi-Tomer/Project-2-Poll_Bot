@@ -12,7 +12,7 @@ public class MenuPanel extends JPanel {
     // Constructor......................................................................................................
     public MenuPanel() {
         // Setting up the panel:
-        this.setBounds(0, 0, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        this.setBounds(0, 0, Utils.WINDOW_WIDTH, Utils.WINDOW_HEIGHT);
         this.setBackground(Color.WHITE);
         this.setLayout(null);
         // Setting up the panel.
@@ -23,8 +23,8 @@ public class MenuPanel extends JPanel {
         Font headLineFont = new Font("Arial", Font.PLAIN, 25);
         menuHeadline1.setFont(headLineFont);
         menuHeadline2.setFont(headLineFont);
-        menuHeadline1.setBounds(50, 50, Constants.WINDOW_WIDTH, 25);
-        menuHeadline2.setBounds(50, 75, Constants.WINDOW_WIDTH, 25);
+        menuHeadline1.setBounds(50, 50, Utils.WINDOW_WIDTH, 25);
+        menuHeadline2.setBounds(50, 75, Utils.WINDOW_WIDTH, 25);
         this.add(menuHeadline1);
         this.add(menuHeadline2);
         // Setting up the headline.
@@ -52,13 +52,13 @@ public class MenuPanel extends JPanel {
         // Creating and adding the "Write poll" button explanation:
         JLabel writeExplanation = new JLabel ("Create the poll in your own words.");
         writeExplanation.setFont(buttonExplanationFont);
-        writeExplanation.setBounds(Constants.MAIN_MENU_BUTTON_WIDTH + 75, WRITE_BUTTON_Y_LOCATION + 60, Constants.WINDOW_WIDTH, 15);
+        writeExplanation.setBounds(Utils.MAIN_MENU_BUTTON_WIDTH + 75, WRITE_BUTTON_Y_LOCATION + 60, Utils.WINDOW_WIDTH, 15);
         this.add(writeExplanation);
         // Creating and adding the "Write poll" button explanation.
         // Creating and adding the "GPT poll" button explanation:
         JLabel gptExplanation = new JLabel ("Ask chatGPT for help creating the poll.");
         gptExplanation.setFont(buttonExplanationFont);
-        gptExplanation.setBounds(Constants.MAIN_MENU_BUTTON_WIDTH + 75, GPT_BUTTON_Y_LOCATION + 60, Constants.WINDOW_WIDTH, 15);
+        gptExplanation.setBounds(Utils.MAIN_MENU_BUTTON_WIDTH + 75, GPT_BUTTON_Y_LOCATION + 60, Utils.WINDOW_WIDTH, 15);
         this.add(gptExplanation);
         // Creating and adding the "GPT poll" button explanation.
         // Setting up buttons explanations.

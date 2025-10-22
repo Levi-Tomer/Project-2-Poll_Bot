@@ -8,6 +8,7 @@ public class Frame extends JFrame {
     private AdditionalPollQuestionPanel questionPanelMiddle;
     private AdditionalPollQuestionPanel questionPanelBottom;
     private BottomWritePollPanel bottomPollCreationPanel;
+    private ResultPanel resultPanel;
     private final TelegramBot bot;
 
 
@@ -17,7 +18,7 @@ public class Frame extends JFrame {
         this.bot = bot;
 
         // Setting up the window:
-        this.setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        this.setSize(Utils.WINDOW_WIDTH, Utils.WINDOW_HEIGHT);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
@@ -33,17 +34,20 @@ public class Frame extends JFrame {
 
         // Creating and adding the "write your own poll" GUI:
         this.questionPanelTop = new DefaultPollQuestionPanel();
-        this.questionPanelMiddle = new AdditionalPollQuestionPanel(Constants.QUESTION_PANEL_HEIGHT);
-        this.questionPanelBottom = new AdditionalPollQuestionPanel(Constants.QUESTION_PANEL_HEIGHT * 2);
+        this.questionPanelMiddle = new AdditionalPollQuestionPanel(Utils.QUESTION_PANEL_HEIGHT);
+        this.questionPanelBottom = new AdditionalPollQuestionPanel(Utils.QUESTION_PANEL_HEIGHT * 2);
         this.bottomPollCreationPanel = new BottomWritePollPanel();
+        this.resultPanel = new ResultPanel();
         this.questionPanelTop.setVisible(false);
         this.questionPanelMiddle.setVisible(false);
         this.questionPanelBottom.setVisible(false);
         this.bottomPollCreationPanel.setVisible(false);
+        this.resultPanel.setVisible(false);
         this.add(questionPanelTop);
         this.add(questionPanelMiddle);
         this.add(questionPanelBottom);
         this.add(bottomPollCreationPanel);
+        this.add(resultPanel);
         // Creating and adding the "write your own poll" GUI.
 
         // Main menu buttons listeners:
@@ -134,6 +138,8 @@ public class Frame extends JFrame {
     */
     private void publishPoll() {
         System.out.println("Reached the method from the Frame class.");
+
+
         // Creating and validating poll question 1 and answers:
         String question1 = this.questionPanelTop.getPollQuestion().getText();
         if (validatePollInput(question1)) {
@@ -203,6 +209,17 @@ public class Frame extends JFrame {
             }
         }
         // Creating and validating poll question 3 and answers.
+    }
+
+    /*
+    This function is used to validate the delay poll publication time entered by the user (JTextField in the BottomWritePollPanel).
+    */
+    public static boolean isAllDigits(String text) {
+        if (text == null || text.isEmpty()) return false;
+        for (char c : text.toCharArray()) {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 
     // Getters & Setters................................................................................................

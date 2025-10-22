@@ -1,4 +1,4 @@
-public class Constants {
+public class Utils {
     public static final int WINDOW_WIDTH = 750;
     public static final int WINDOW_HEIGHT = 750;
     public static final int QUESTION_PANEL_HEIGHT = 200;
@@ -12,4 +12,10 @@ public class Constants {
     public static final int QUESTION_TEXTBOX_LABEL = QUESTION_PANEL_HEIGHT / 2 - 35;
     public static final int ANSWER_OPTION_TEXTBOX_X_LOCATION = WINDOW_WIDTH - ANSWER_TEXTBOX_WIDTH - 50;
     public static final int ADDITIONAL_ANSWER_OPTION_BUTTON = WINDOW_WIDTH - ANSWER_TEXTBOX_WIDTH - 50;
+
+    public static void sleep (long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (Exception e) {}
+    }
 }

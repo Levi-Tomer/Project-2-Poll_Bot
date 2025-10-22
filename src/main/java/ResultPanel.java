@@ -1,17 +1,13 @@
 import javax.swing.*;
-import java.awt.*;
 
-public class Button extends JButton {
+public class ResultPanel extends JPanel {
+    private Button back;
 
     // Constructor......................................................................................................
-    public Button(String buttonTitle, int x, int y) {
-        this.setText(buttonTitle);
-        this.setBounds(x, y, Utils.MAIN_MENU_BUTTON_WIDTH, Utils.MAIN_MENU_BUTTON_HEIGHT);
-        Font font = new Font ("Arial", Font.PLAIN, 20);
-        this.setFont(font);
-    }
 
     // toString.........................................................................................................
+
+    // compareTo........................................................................................................
 
     // Methods..........................................................................................................
 

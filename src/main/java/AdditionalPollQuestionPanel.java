@@ -13,14 +13,14 @@ public class AdditionalPollQuestionPanel extends JPanel {
     // Constructor......................................................................................................
     public AdditionalPollQuestionPanel(int y) {
         // Setting up the panel:
-        this.setBounds(0, y, Constants.WINDOW_WIDTH, Constants.QUESTION_PANEL_HEIGHT);
+        this.setBounds(0, y, Utils.WINDOW_WIDTH, Utils.QUESTION_PANEL_HEIGHT);
         this.setBackground(Color.WHITE);
         this.setLayout(null);
         // Setting up the panel.
 
         // Creating and adding the "Add Question" button:
         JButton addQuestion2Button = new JButton("Add additional question");
-        addQuestion2Button.setBounds(50, Constants.QUESTION_PANEL_HEIGHT / 2 - 35, Constants.QUESTION_TEXTBOX_WIDTH, 50);
+        addQuestion2Button.setBounds(50, Utils.QUESTION_PANEL_HEIGHT / 2 - 35, Utils.QUESTION_TEXTBOX_WIDTH, 50);
         addQuestion2Button.setBackground(Color.WHITE);
         addQuestion2Button.setVisible(true);
         this.add(addQuestion2Button);
@@ -28,7 +28,7 @@ public class AdditionalPollQuestionPanel extends JPanel {
 
         // Creating and adding the "Remove Question" button:
         JButton removeQuestion2Button = new JButton("-");
-        removeQuestion2Button.setBounds(50 - 40, Constants.QUESTION_PANEL_HEIGHT / 2 - 15, 40, 30);
+        removeQuestion2Button.setBounds(50 - 40, Utils.QUESTION_PANEL_HEIGHT / 2 - 15, 40, 30);
         removeQuestion2Button.setBackground(Color.WHITE);
         removeQuestion2Button.setVisible(false);
         this.add(removeQuestion2Button);
@@ -38,14 +38,14 @@ public class AdditionalPollQuestionPanel extends JPanel {
         JLabel questionHeadline = new JLabel("Enter your question below:");
         Font questionHeadLineFont = new Font("Arial", Font.PLAIN, 20);
         questionHeadline.setFont(questionHeadLineFont);
-        questionHeadline.setBounds(50, Constants.QUESTION_TEXTBOX_LABEL, Constants.WINDOW_WIDTH, 20);
+        questionHeadline.setBounds(50, Utils.QUESTION_TEXTBOX_LABEL, Utils.WINDOW_WIDTH, 20);
         questionHeadline.setVisible(false);
         this.add(questionHeadline);
         // Creating and adding question textbox instructions.
 
         // Creating and adding textbox for the question:
         this.pollQuestion = new JTextField();
-        this.pollQuestion.setBounds(50, Constants.QUESTION_TEXTBOX_Y_LOCATION, Constants.QUESTION_TEXTBOX_WIDTH, 30);
+        this.pollQuestion.setBounds(50, Utils.QUESTION_TEXTBOX_Y_LOCATION, Utils.QUESTION_TEXTBOX_WIDTH, 30);
         this.pollQuestion.setVisible(false);
         this.add(this.pollQuestion);
         // Creating and adding textbox for the question.
@@ -53,25 +53,25 @@ public class AdditionalPollQuestionPanel extends JPanel {
         // creating and adding textboxes for the possible answers:
         // Answer 1:
         this.answer1 = new JTextField();
-        this.answer1.setBounds(Constants.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer1.setBounds(Utils.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42, Utils.ANSWER_TEXTBOX_WIDTH, 30);
         this.answer1.setVisible(false);
         this.add(this.answer1);
         // Answer 1.
         // Answer 2:
         this.answer2 = new JTextField();
-        this.answer2.setBounds(Constants.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42 + 30, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer2.setBounds(Utils.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42 + 30, Utils.ANSWER_TEXTBOX_WIDTH, 30);
         this.answer2.setVisible(false);
         this.add(this.answer2);
         // Answer 2.
         // Answer 3:
         this.answer3 = new JTextField();
-        this.answer3.setBounds(Constants.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42 + 30 * 2, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer3.setBounds(Utils.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42 + 30 * 2, Utils.ANSWER_TEXTBOX_WIDTH, 30);
         this.answer3.setVisible(false);
         this.add(this.answer3);
         // Answer 3.
         // Answer 4:
         this.answer4 = new JTextField();
-        this.answer4.setBounds(Constants.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42 + 30 * 3, Constants.ANSWER_TEXTBOX_WIDTH, 30);
+        this.answer4.setBounds(Utils.ANSWER_OPTION_TEXTBOX_X_LOCATION, 42 + 30 * 3, Utils.ANSWER_TEXTBOX_WIDTH, 30);
         this.answer4.setVisible(false);
         this.add(this.answer4);
         // Answer 4.
@@ -80,28 +80,28 @@ public class AdditionalPollQuestionPanel extends JPanel {
         // Creating and adding buttons for additional answers:
         // Add answer 3:
         JButton addAnswer3Button = new JButton("Add additional answer");
-        addAnswer3Button.setBounds(Constants.ADDITIONAL_ANSWER_OPTION_BUTTON, 42 + 30 * 2, Constants.ADD_ANSWER_BUTTON_WIDTH, Constants.ADD_ANSWER_BUTTON_HEIGHT);
+        addAnswer3Button.setBounds(Utils.ADDITIONAL_ANSWER_OPTION_BUTTON, 42 + 30 * 2, Utils.ADD_ANSWER_BUTTON_WIDTH, Utils.ADD_ANSWER_BUTTON_HEIGHT);
         addAnswer3Button.setBackground(Color.WHITE);
         addAnswer3Button.setVisible(false);
         this.add(addAnswer3Button);
         // Add answer 3.
         // Remove answer 3:
         JButton removeAnswer3Button = new JButton("-");
-        removeAnswer3Button.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50 - 40, 42 + 30 * 2, 40, 30);
+        removeAnswer3Button.setBounds(Utils.WINDOW_WIDTH - Utils.ANSWER_TEXTBOX_WIDTH - 50 - 40, 42 + 30 * 2, 40, 30);
         removeAnswer3Button.setBackground(Color.WHITE);
         removeAnswer3Button.setVisible(false);
         this.add(removeAnswer3Button);
         // Remove answer 3.
         // Add answer 4:
         JButton addAnswer4Button = new JButton("Add additional answer");
-        addAnswer4Button.setBounds(Constants.ADDITIONAL_ANSWER_OPTION_BUTTON, 42 + 30 * 3, Constants.ADD_ANSWER_BUTTON_WIDTH, Constants.ADD_ANSWER_BUTTON_HEIGHT);
+        addAnswer4Button.setBounds(Utils.ADDITIONAL_ANSWER_OPTION_BUTTON, 42 + 30 * 3, Utils.ADD_ANSWER_BUTTON_WIDTH, Utils.ADD_ANSWER_BUTTON_HEIGHT);
         addAnswer4Button.setBackground(Color.WHITE);
         addAnswer4Button.setVisible(false);
         this.add(addAnswer4Button);
         // Add answer 4.
         // Remove answer 4:
         JButton removeAnswer4Button = new JButton("-");
-        removeAnswer4Button.setBounds(Constants.WINDOW_WIDTH - Constants.ANSWER_TEXTBOX_WIDTH - 50 - 40, 42 + 30 * 3, 40, 30);
+        removeAnswer4Button.setBounds(Utils.WINDOW_WIDTH - Utils.ANSWER_TEXTBOX_WIDTH - 50 - 40, 42 + 30 * 3, 40, 30);
         removeAnswer4Button.setBackground(Color.WHITE);
         removeAnswer4Button.setVisible(false);
         this.add(removeAnswer4Button);
