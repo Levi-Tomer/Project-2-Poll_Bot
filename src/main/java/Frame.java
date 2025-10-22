@@ -139,73 +139,6 @@ public class Frame extends JFrame {
     }
 
     /*
-    This method is identifying the number of questions and possible options from the "write your own"
-    to be published in the poll.
-    It arranges the information received from the poll creation GUI panel, validate it, aware user in case of a problem
-    and in case everything is ok - calls the sendPoll method from the TelegramBot class.
-    */
-    private void publishPoll() {
-        System.out.println("Reached the method from the Frame class.");
-        // Getting the delay text for the publication delay:
-        int userDelay = 0;
-        String delayMinutesText = this.bottomPollCreationPanel.getDelayPublication().getText();
-        if (delayMinutesText != null && !delayMinutesText.isEmpty() && isAllDigits(delayMinutesText)) {
-            userDelay = Integer.parseInt(delayMinutesText);
-        }
-        int publicationDelayMinutes = Math.max(0, userDelay);
-        // Getting the delay text for the publication delay.
-
-        // Creating and validating poll question 1 and answers:
-        String question1 = this.questionPanelTop.getPollQuestion().getText();
-        List<String> question1Options = new ArrayList<>(4);
-        if (validatePollInput(question1)) {
-            String q1Option1 = this.questionPanelTop.getAnswer1().getText();
-            String q1Option2 = this.questionPanelTop.getAnswer2().getText();
-            String q1Option3 = this.questionPanelTop.getAnswer3().getText();
-            String q1Option4 = this.questionPanelTop.getAnswer4().getText();
-            question1Options = validateAnswerOptions(q1Option1, q1Option2, q1Option3, q1Option4);
-            if (question1Options.size() >= 2) {
-                moveToResultPanel();
-                // Enter Delay here
-                this.bot.sendPoll(question1, question1Options);
-            }
-        }
-        // Creating and validating poll question 1 and answers.
-
-        // Creating and validating poll question 2 and answers:
-        if (this.questionPanelMiddle.isAdditionalQuestion()) {
-            String question2 = this.questionPanelMiddle.getPollQuestion().getText();
-            if (validatePollInput(question2)) {
-                String q2Option1 = this.questionPanelMiddle.getAnswer1().getText();
-                String q2Option2 = this.questionPanelMiddle.getAnswer2().getText();
-                String q2Option3 = this.questionPanelMiddle.getAnswer3().getText();
-                String q2Option4 = this.questionPanelMiddle.getAnswer4().getText();
-                List<String> question2Options = validateAnswerOptions(q2Option1, q2Option2, q2Option3, q2Option4);
-                if (question2Options.size() >= 2 && question1Options.size() >= 2) {
-                    this.bot.sendPoll(question2, question2Options);
-                }
-            }
-        }
-        // Creating and validating poll question 2 and answers.
-
-        // Creating and validating poll question 3 and answers:
-        if (this.questionPanelBottom.isAdditionalQuestion()) {
-            String question3 = this.questionPanelBottom.getPollQuestion().getText();
-            if (validatePollInput(question3)) {
-                String q3Option1 = this.questionPanelBottom.getAnswer1().getText();
-                String q3Option2 = this.questionPanelBottom.getAnswer2().getText();
-                String q3Option3 = this.questionPanelBottom.getAnswer3().getText();
-                String q3Option4 = this.questionPanelBottom.getAnswer4().getText();
-                List<String> question3Options = validateAnswerOptions(q3Option1, q3Option2, q3Option3, q3Option4);
-                if (question3Options.size() >= 2 && question1Options.size() >= 2) {
-                    this.bot.sendPoll(question3, question3Options);
-                }
-            }
-        }
-        // Creating and validating poll question 3 and answers.
-    }
-
-    /*
     This function is used to validate the delay poll publication time entered by the user (JTextField in the BottomWritePollPanel).
     */
     public static boolean isAllDigits(String text) {
@@ -216,5 +149,70 @@ public class Frame extends JFrame {
         return true;
     }
 
-    // Getters & Setters................................................................................................
+    private void trySendFromPanel(AdditionalPollQuestionPanel panel) {
+        if (!panel.isAdditionalQuestion()) return;
+        String q = panel.getPollQuestion().getText();
+        if (!validatePollInput(q)) return;
+        String a1 = panel.getAnswer1().getText();
+        String a2 = panel.getAnswer2().getText();
+        String a3 = panel.getAnswer3().getText();
+        String a4 = panel.getAnswer4().getText();
+        List<String> opts = validateAnswerOptions(a1, a2, a3, a4);
+        if (opts.size() >= 2) {
+            this.bot.sendPoll(q, opts);
+        }
+    }
+
+    /*
+    This method is identifying the number of questions and possible options from the "write your own"
+    to be published in the poll.
+    It arranges the information received from the poll creation GUI panel, validate it, aware user in case of a problem
+    and in case everything is ok - calls the sendPoll method from the TelegramBot class.
+    */
+    private void publishPoll() {
+        System.out.println("Reached the method from the Frame class.");
+
+        // Delay (minutes)
+        int userDelay = 0;
+        String delayMinutesText = this.bottomPollCreationPanel.getDelayPublication().getText();
+        if (delayMinutesText != null && !delayMinutesText.isEmpty() && isAllDigits(delayMinutesText)) {
+            userDelay = Integer.parseInt(delayMinutesText.trim());
+        }
+        final int publicationDelayMinutes = Math.max(0, userDelay);
+
+        // Question 1 (must be valid to proceed)
+        String question1 = this.questionPanelTop.getPollQuestion().getText();
+        if (!validatePollInput(question1)) {
+            return; // stop – Q1 is mandatory
+        }
+
+        String q1o1 = this.questionPanelTop.getAnswer1().getText();
+        String q1o2 = this.questionPanelTop.getAnswer2().getText();
+        String q1o3 = this.questionPanelTop.getAnswer3().getText();
+        String q1o4 = this.questionPanelTop.getAnswer4().getText();
+        List<String> question1Options = validateAnswerOptions(q1o1, q1o2, q1o3, q1o4);
+        if (question1Options == null || question1Options.size() < 2) {
+            return; // stop – need at least two options
+        }
+
+        // move to results panel once Q1 is confirmed valid
+        moveToResultPanel();
+
+        // what to do after delay (or immediately): send Q1, then optional Q2/Q3
+        Runnable continueFlow = () -> {
+            this.bot.sendPoll(question1, question1Options);
+            trySendFromPanel(this.questionPanelMiddle);
+            trySendFromPanel(this.questionPanelBottom);
+        };
+
+        if (publicationDelayMinutes > 0) {
+            int delayMs = publicationDelayMinutes * 60_000;
+            javax.swing.Timer timer = new javax.swing.Timer(delayMs, e -> continueFlow.run());
+            timer.setRepeats(false);
+            timer.start();
+        } else {
+            continueFlow.run();
+        }
+    }
 }
+    // Getters & Setters................................................................................................
