@@ -173,6 +173,18 @@ public class Frame extends JFrame {
         }
     }
 
+    private void scheduleShowBackButton() {
+        int ms = 5 * 60_000;
+        javax.swing.Timer t = new javax.swing.Timer(ms, e -> {
+            this.resultPanel.getBottomResultPanel().getBackButton().setVisible(true);
+            this.resultPanel.revalidate();
+            this.resultPanel.repaint();
+            this.resultPanel.getBottomResultPanel().getInstructions().setVisible(false);
+        });
+        t.setRepeats(false);
+        t.start();
+    }
+
     /*
     This method is identifying the number of questions and possible options from the "write your own"
     to be published in the poll.
@@ -211,6 +223,7 @@ public class Frame extends JFrame {
         // what to do after delay (or immediately): send Q1, then optional Q2/Q3
         Runnable continueFlow = () -> {
             this.bot.sendPoll(question1, question1Options);
+            scheduleShowBackButton();
             trySendFromPanel(this.questionPanelMiddle);
             trySendFromPanel(this.questionPanelBottom);
         };

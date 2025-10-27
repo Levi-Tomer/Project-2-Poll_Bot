@@ -3,6 +3,7 @@ import java.awt.*;
 
 public class BottomResultPanel extends JPanel {
     private JButton backButton;
+    private JLabel instructions;
 
     // Constructor......................................................................................................
     public BottomResultPanel() {
@@ -13,12 +14,12 @@ public class BottomResultPanel extends JPanel {
         // Setting up the panel.
 
         // Creating and adding the status task:
-        JLabel statusHeadline = new JLabel("Once the poll is done, a button will appear to go back to the main menu.");
+        this.instructions = new JLabel("Once the poll is done, a button will appear to go back to the main menu.");
         Font statusHeadLineFont = new Font("Arial", Font.PLAIN, 15);
-        statusHeadline.setFont(statusHeadLineFont);
-        statusHeadline.setBounds(10, 10, Utils.WINDOW_WIDTH, 15);
-        statusHeadline.setVisible(true);
-        this.add(statusHeadline);
+        instructions.setFont(statusHeadLineFont);
+        instructions.setBounds(10, 10, Utils.WINDOW_WIDTH, 15);
+        instructions.setVisible(true);
+        this.add(instructions);
         // Creating and adding the status task.
 
         // Creating and adding the back button:
@@ -39,5 +40,9 @@ public class BottomResultPanel extends JPanel {
     // Getters & Setters................................................................................................
     public JButton getBackButton() {
         return backButton;
+    }
+
+    public JLabel getInstructions() {
+        return instructions;
     }
 }
