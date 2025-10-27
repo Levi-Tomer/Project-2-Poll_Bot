@@ -26,11 +26,6 @@ public class BottomWritePollPanel extends JPanel{
         this.delayPublication = new JTextField();
         delayPublication.setBounds(Utils.WINDOW_WIDTH / 2 - 50, 10, 100, 30);
         this.add(delayPublication);
-//        Integer[] delayOptions = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
-//        JComboBox<Integer> delayCombo = new JComboBox<>(delayOptions);
-//        delayCombo.setSelectedItem(0);
-//        delayCombo.setBounds(Constants.WINDOW_WIDTH / 2 - 50, 10, 100, 30);
-//        this.add(delayCombo);
         // Creating and adding description:
         JLabel delayDescription = new JLabel("Delay publish (minutes).");
         Font descriptionFont = new Font("Arial", Font.PLAIN, 15);

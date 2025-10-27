@@ -9,6 +9,7 @@ public class Frame extends JFrame {
     private AdditionalPollQuestionPanel questionPanelBottom;
     private BottomWritePollPanel bottomPollCreationPanel;
     private ResultPanel resultPanel;
+
     private final TelegramBot bot;
 
 
@@ -63,13 +64,17 @@ public class Frame extends JFrame {
         // "Publish poll" button from "BottomWritePollPanel" class:
         this.bottomPollCreationPanel.getPublishButton().addActionListener(e -> publishPoll());
         // "Publish poll" button from "BottomWritePollPanel" class.
+
+        // Back to main menu from "Result panel" menu:
+        this.resultPanel.getBottomResultPanel().getBackButton().addActionListener(e -> moveBackToMainMenuFromResultPanel());
+        // Back to main menu from "Result panel" menu.
     }
 
     // toString.........................................................................................................
 
     // Methods..........................................................................................................
     private void moveToWritePollInterface() {
-        if (false) { // !!!!!!!!!!!Attention! This statement should be: "if (this.bot.getSubscribers().size() < 3)" but it's not set for testing purposes.
+        if (false) { // !!!!!!!!!!!Attention! This statement should be: "if (this.bot.getSubscribers().size() < 3)" but it's not for testing purposes.
             JOptionPane.showMessageDialog(this,
                     "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
@@ -107,6 +112,11 @@ public class Frame extends JFrame {
         this.questionPanelBottom.setVisible(false);
         this.bottomPollCreationPanel.setVisible(false);
         this.menuPanel.setVisible(true);
+    }
+
+    private void moveBackToMainMenuFromResultPanel() {
+        this.menuPanel.setVisible(true);
+        this.resultPanel.setVisible(false);
     }
 
     /*
