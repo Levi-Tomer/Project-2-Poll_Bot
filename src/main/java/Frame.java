@@ -198,7 +198,7 @@ public class Frame extends JFrame {
         int userDelay = 0;
         String delayMinutesText = this.bottomPollCreationPanel.getDelayPublication().getText();
         if (delayMinutesText != null && !delayMinutesText.isEmpty() && isAllDigits(delayMinutesText)) {
-            userDelay = Integer.parseInt(delayMinutesText.trim());
+            userDelay = Integer.parseInt(delayMinutesText);
         }
         final int publicationDelayMinutes = Math.max(0, userDelay);
 
