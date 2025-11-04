@@ -1,47 +1,74 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class QuestionResultPanel extends JPanel {
-    private JLabel question;
-    private JLabel option1;
-    private JLabel option2;
-    private JLabel option3;
-    private JLabel option4;
+    private JLabel questionHeadline;
+    private JLabel questionValue;
+    private JLabel[] optionHeadlines = new JLabel[4];
+    private JLabel[] optionValues = new JLabel[4];
 
     // Constructor......................................................................................................
     public QuestionResultPanel(int y, String questionNumber) {
-        // Setting up the panel:
+        // Panel setup
         this.setBounds(0, y, Utils.WINDOW_WIDTH, Utils.QUESTION_PANEL_HEIGHT);
         this.setBackground(Color.WHITE);
         this.setLayout(null);
-        // Setting up the panel.
 
-        // Creating and adding the question text:
-        JLabel questionHeadline = new JLabel("Question" + " " + questionNumber);
-        Font questionHeadLineFont = new Font("Arial", Font.PLAIN, 20);
-        questionHeadline.setFont(questionHeadLineFont);
-        questionHeadline.setBounds(10, 10, Utils.WINDOW_WIDTH, 20);
-        questionHeadline.setVisible(true);
+        // Question headline (static label "Question X:")
+        questionHeadline = new JLabel("Question " + questionNumber + ":");
+        questionHeadline.setFont(new Font("Arial", Font.PLAIN, 20));
+        questionHeadline.setBounds(10, 10, 200, 20);
         this.add(questionHeadline);
-        // Creating and adding the question text.
 
-        // Creating and adding the options text:
+        // Question value (actual question text – updated later)
+        questionValue = new JLabel("");
+        questionValue.setFont(new Font("Arial", Font.PLAIN, 18));
+        questionValue.setBounds(220, 10, Utils.WINDOW_WIDTH - 240, 20);
+        this.add(questionValue);
+
+        // Options
         Font optionsHeadLineFont = new Font("Arial", Font.PLAIN, 15);
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             JLabel optionHeadline = new JLabel("Option " + (i + 1) + ":");
             optionHeadline.setFont(optionsHeadLineFont);
-            optionHeadline.setBounds(10, 35 + i * 20, Utils.WINDOW_WIDTH, 15);
-            optionHeadline.setVisible(true);
+            optionHeadline.setBounds(10, 35 + i * 20, 100, 15);
             this.add(optionHeadline);
+            optionHeadlines[i] = optionHeadline;
+
+            JLabel value = new JLabel("—"); // will be "text — N voters (P%)"
+            value.setFont(new Font("Arial", Font.PLAIN, 15));
+            value.setBounds(120, 35 + i * 20, Utils.WINDOW_WIDTH - 140, 15);
+            this.add(value);
+            optionValues[i] = value;
         }
-        // Creating and adding the options text.
     }
-
-    // toString.........................................................................................................
-
-    // compareTo........................................................................................................
 
     // Methods..........................................................................................................
 
-    // Getters & Setters................................................................................................
+    /** עדכון טקסט השאלה בראש הפאנל */
+    public void setQuestionText(String text) {
+        this.questionValue.setText(text != null ? text : "");
+    }
+
+    /**
+     * עדכון תוצאות האופציות:
+     * optionTexts – טקסטי האופציות לפי הסדר
+     * counts      – מספר מצביעים לכל אופציה
+     * totalVoters – סה״כ מצביעים (לחישוב אחוזים)
+     */
+    public void setResults(List<String> optionTexts, List<Integer> counts, int totalVoters) {
+        for (int i = 0; i < 4; i++) {
+            String text = (optionTexts != null && optionTexts.size() > i) ? optionTexts.get(i) : "—";
+            int count   = (counts != null && counts.size() > i) ? counts.get(i) : 0;
+            double pct  = (totalVoters > 0) ? (count * 100.0 / totalVoters) : 0.0;
+            optionValues[i].setText(String.format("%s — %d מצביעים (%.1f%%)", text, count, pct));
+        }
+    }
+
+    // Getters (אם תרצה בעתיד)
+    public JLabel getQuestionHeadline() { return questionHeadline; }
+    public JLabel getQuestionValue() { return questionValue; }
+    public JLabel[] getOptionHeadlines() { return optionHeadlines; }
+    public JLabel[] getOptionValues() { return optionValues; }
 }

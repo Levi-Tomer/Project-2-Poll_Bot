@@ -1,6 +1,6 @@
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.Timer;
+import java.util.*;
 
 public class Frame extends JFrame {
     private MenuPanel menuPanel;
@@ -10,8 +10,12 @@ public class Frame extends JFrame {
     private BottomWritePollPanel bottomPollCreationPanel;
     private ResultPanel resultPanel;
 
-    private final TelegramBot bot;
+    // question text -> slot index (1=top, 2=middle, 3=bottom)
+    private final Map<String, Integer> questionToSlot = new HashMap<>();
+    private final Set<String> shownPollIds = new HashSet<>();            // pollIds שכבר הוצגו
+    private Timer resultsWatcher;                                        // טיימר שדוגם את הבוט
 
+    private final TelegramBot bot;
 
     // Constructor......................................................................................................
     public Frame(TelegramBot bot) {
@@ -54,7 +58,7 @@ public class Frame extends JFrame {
         // Main menu buttons listeners:
         this.menuPanel.getWritePollButton().addActionListener(e -> moveToWritePollInterface());
         this.menuPanel.getGptPollButton().addActionListener(e -> moveToGptPollInterface());
-        this.menuPanel.getExitButton().addActionListener(e -> {System.exit(0);});
+        this.menuPanel.getExitButton().addActionListener(e -> { System.exit(0); });
         // Main menu buttons listeners.
 
         // Back to main menu from "Write poll" menu:
@@ -70,11 +74,9 @@ public class Frame extends JFrame {
         // Back to main menu from "Result panel" menu.
     }
 
-    // toString.........................................................................................................
-
     // Methods..........................................................................................................
     private void moveToWritePollInterface() {
-        if (false) { // !!!!!!!!!!!Attention! This statement should be: "if (this.bot.getSubscribers().size() < 3)" but it's not for testing purposes.
+        if (false) { // !!!!!!!!!!! For testing. Real check: if (this.bot.getSubscribers().size() < 3)
             JOptionPane.showMessageDialog(this,
                     "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
@@ -88,13 +90,13 @@ public class Frame extends JFrame {
     }
 
     private void moveToGptPollInterface() {
-        if (this.bot.getSubscribers().size() < 3) {    // this.bot.getSubscribers().size() < 3
+        if (this.bot.getSubscribers().size() < 3) {
             JOptionPane.showMessageDialog(this,
                     "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
         } else {
             this.menuPanel.setVisible(false);
-            // Here the chatGPT poll creation interface should be.
+            // TODO: Add ChatGPT poll creation interface
         }
     }
 
@@ -104,6 +106,7 @@ public class Frame extends JFrame {
         this.questionPanelMiddle.setVisible(false);
         this.questionPanelBottom.setVisible(false);
         this.bottomPollCreationPanel.setVisible(false);
+        startResultsWatcher();
     }
 
     private void moveBackToMainMenuFromWritePollInterface() {
@@ -117,40 +120,34 @@ public class Frame extends JFrame {
     private void moveBackToMainMenuFromResultPanel() {
         this.menuPanel.setVisible(true);
         this.resultPanel.setVisible(false);
+        stopResultsWatcher();
     }
 
     /*
-    Aid method to be used with the question and answers returning from the "write poll" GUI.
-    The method makes sure the questions and the answers are not null and that the string isn't empty.
-    */
+     * Aid method to be used with the question and answers returning from the "write poll" GUI.
+     * The method makes sure the questions and the answers are not null and that the string isn't empty.
+     */
     private boolean validatePollInput(String text) {
         return text != null && !text.isEmpty();
     }
 
     /*
-    Aid method that receives the options for a question to be published in the poll, and creating an ArrayList that
-    will be returned and validated in the "publishPoll" method before publishing.
-    */
-    private ArrayList validateAnswerOptions(String o1, String o2, String o3, String o4) {
+     * Aid method that receives the options for a question to be published in the poll, and creates a List
+     * that will be returned and validated in the "publishPoll" method before publishing.
+     */
+    private List<String> validateAnswerOptions(String o1, String o2, String o3, String o4) {
         ArrayList<String> options = new ArrayList<>(4);
-        if (validatePollInput(o1)) {
-            options.add(o1);
-        }
-        if (validatePollInput(o2)) {
-            options.add(o2);
-        }
-        if (validatePollInput(o3)) {
-            options.add(o3);
-        }
-        if (validatePollInput(o4)) {
-            options.add(o4);
-        }
+        if (validatePollInput(o1)) options.add(o1);
+        if (validatePollInput(o2)) options.add(o2);
+        if (validatePollInput(o3)) options.add(o3);
+        if (validatePollInput(o4)) options.add(o4);
         return options;
     }
 
     /*
-    This function is used to validate the delay poll publication time entered by the user (JTextField in the BottomWritePollPanel).
-    */
+     * This function is used to validate the delay poll publication time entered by the user
+     * (JTextField in the BottomWritePollPanel).
+     */
     public static boolean isAllDigits(String text) {
         if (text == null || text.isEmpty()) return false;
         for (char c : text.toCharArray()) {
@@ -185,12 +182,84 @@ public class Frame extends JFrame {
         t.start();
     }
 
+    /**
+     * Public entry point called by the bot when a poll is closed and a full result is available.
+     * Maps question text -> slot, registers pollId to that slot, and updates the UI.
+     */
+    public void updatePollResults(TelegramBot.PollResult result) {
+        // find slot by question text (mapped at publish time)
+        Integer slot = questionToSlot.get(result.getQuestion());
+        if (slot == null) {
+            System.out.println("No slot mapping for question: " + result.getQuestion());
+            return;
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            // register pollId to slot so ResultPanel knows which QuestionResultPanel to update
+            resultPanel.registerPoll(result.getPollId(), slot);
+
+            // set question text (optional, nice to show)
+            resultPanel.setQuestionText(result.getPollId(), result.getQuestion());
+
+            // finally update results for that pollId
+            resultPanel.updateResultsFor(
+                    result.getPollId(),
+                    result.getOptionTexts(),
+                    result.getCounts(),
+                    result.getTotalVoters()
+            );
+        });
+    }
+
+    private void startResultsWatcher() {
+        stopResultsWatcher();
+        resultsWatcher = new Timer(2000, e -> pullOnce());
+        resultsWatcher.setRepeats(true);
+        resultsWatcher.start();
+    }
+
+    private void stopResultsWatcher() {
+        if (resultsWatcher != null) {
+            resultsWatcher.stop();
+            resultsWatcher = null;
+        }
+    }
+
+    private void pullOnce() {
+        Map<String, TelegramBot.PollResult> all = bot.getAllPolls();
+        if (all == null || all.isEmpty()) return;
+
+        for (TelegramBot.PollResult pr : all.values()) {
+            if (!pr.isClosed()) continue;                    // רק סקרים סגורים
+            if (shownPollIds.contains(pr.getPollId())) continue;
+
+            Integer slot = questionToSlot.get(pr.getQuestion());
+            if (slot == null) {
+                System.out.println("[FRAME] No slot mapping for question: " + pr.getQuestion());
+                continue;
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                resultPanel.registerPoll(pr.getPollId(), slot);
+                resultPanel.setQuestionText(pr.getPollId(), pr.getQuestion());
+                resultPanel.updateResultsFor(
+                        pr.getPollId(),
+                        pr.getOptionTexts(),
+                        pr.getCounts(),
+                        pr.getTotalVoters()
+                );
+            });
+
+            shownPollIds.add(pr.getPollId());
+            System.out.println("[FRAME] rendered closed poll: " + pr.getPollId());
+        }
+    }
+
+
     /*
-    This method is identifying the number of questions and possible options from the "write your own"
-    to be published in the poll.
-    It arranges the information received from the poll creation GUI panel, validate it, aware user in case of a problem
-    and in case everything is ok - calls the sendPoll method from the TelegramBot class.
-    */
+     * This method identifies the number of questions and possible options from the "write your own" UI.
+     * It validates the input and, if valid, calls TelegramBot.sendPoll for each question.
+     */
     private void publishPoll() {
         System.out.println("Reached the method from the Frame class.");
 
@@ -217,6 +286,26 @@ public class Frame extends JFrame {
             return; // stop – need at least two options
         }
 
+        // Map question texts to slots BEFORE sending
+        questionToSlot.clear();
+        questionToSlot.put(question1, 1);
+
+        // If middle question exists, map it
+        if (this.questionPanelMiddle.isAdditionalQuestion()) {
+            String q2 = this.questionPanelMiddle.getPollQuestion().getText();
+            if (validatePollInput(q2)) {
+                questionToSlot.put(q2, 2);
+            }
+        }
+
+        // If bottom question exists, map it
+        if (this.questionPanelBottom.isAdditionalQuestion()) {
+            String q3 = this.questionPanelBottom.getPollQuestion().getText();
+            if (validatePollInput(q3)) {
+                questionToSlot.put(q3, 3);
+            }
+        }
+
         // move to results panel once Q1 is confirmed valid
         moveToResultPanel();
 
@@ -224,6 +313,8 @@ public class Frame extends JFrame {
         Runnable continueFlow = () -> {
             this.bot.sendPoll(question1, question1Options);
             scheduleShowBackButton();
+
+            // Try send middle and bottom if exist
             trySendFromPanel(this.questionPanelMiddle);
             trySendFromPanel(this.questionPanelBottom);
         };
@@ -238,4 +329,3 @@ public class Frame extends JFrame {
         }
     }
 }
-    // Getters & Setters................................................................................................
