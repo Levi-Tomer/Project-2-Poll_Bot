@@ -10,7 +10,6 @@ public class ResultPanel extends JPanel {
     private QuestionResultPanel bottom;
     private BottomResultPanel bottomResultPanel;
 
-    // pollId -> panel
     private final Map<String, QuestionResultPanel> pollIdToPanel = new HashMap<>();
 
     // Constructor......................................................................................................
@@ -30,18 +29,15 @@ public class ResultPanel extends JPanel {
         this.add(this.top);
         this.add(this.middle);
         this.add(this.bottom);
+        // Creating and adding the panels.
 
         // Creating and adding the bottom panel:
         this.bottomResultPanel = new BottomResultPanel();
         this.add(bottomResultPanel);
+        // Creating and adding the bottom panel.
     }
 
     // Methods..........................................................................................................
-
-    /**
-     * רישום pollId לפאנל מסוים (1=top, 2=middle, 3=bottom).
-     * קורא מי שצריך (Frame) לפני/בעת העדכון כדי שהמפה תדע לאן לשייך תוצאות.
-     */
     public void registerPoll(String pollId, int slotIndex) {
         QuestionResultPanel target = switch (slotIndex) {
             case 1 -> top;
@@ -52,16 +48,12 @@ public class ResultPanel extends JPanel {
         pollIdToPanel.put(pollId, target);
     }
 
-    /** עדכון טקסט השאלה בראש הפאנל לפי pollId */
     public void setQuestionText(String pollId, String questionText) {
         QuestionResultPanel target = pollIdToPanel.get(pollId);
         if (target == null) return;
         target.setQuestionText(questionText);
     }
 
-    /**
-     * עדכון תוצאות מלאות לפי pollId (טקסטי אופציות, ספירות, סה״כ מצביעים).
-     */
     public void updateResultsFor(String pollId, List<String> optionTexts, List<Integer> counts, int totalVoters) {
         QuestionResultPanel target = pollIdToPanel.get(pollId);
         if (target == null) return;
@@ -71,7 +63,6 @@ public class ResultPanel extends JPanel {
         revalidate();
         repaint();
     }
-
 
     // Getters & Setters................................................................................................
     public QuestionResultPanel getTop() {

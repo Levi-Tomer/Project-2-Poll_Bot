@@ -9,12 +9,9 @@ public class Frame extends JFrame {
     private AdditionalPollQuestionPanel questionPanelBottom;
     private BottomWritePollPanel bottomPollCreationPanel;
     private ResultPanel resultPanel;
-
-    // question text -> slot index (1=top, 2=middle, 3=bottom)
     private final Map<String, Integer> questionToSlot = new HashMap<>();
-    private final Set<String> shownPollIds = new HashSet<>();            // pollIds שכבר הוצגו
-    private Timer resultsWatcher;                                        // טיימר שדוגם את הבוט
-
+    private final Set<String> shownPollIds = new HashSet<>();
+    private Timer resultsWatcher;
     private final TelegramBot bot;
 
     // Constructor......................................................................................................
@@ -182,10 +179,6 @@ public class Frame extends JFrame {
         t.start();
     }
 
-    /**
-     * Public entry point called by the bot when a poll is closed and a full result is available.
-     * Maps question text -> slot, registers pollId to that slot, and updates the UI.
-     */
     public void updatePollResults(TelegramBot.PollResult result) {
         // find slot by question text (mapped at publish time)
         Integer slot = questionToSlot.get(result.getQuestion());
@@ -230,7 +223,7 @@ public class Frame extends JFrame {
         if (all == null || all.isEmpty()) return;
 
         for (TelegramBot.PollResult pr : all.values()) {
-            if (!pr.isClosed()) continue;                    // רק סקרים סגורים
+            if (!pr.isClosed()) continue;
             if (shownPollIds.contains(pr.getPollId())) continue;
 
             Integer slot = questionToSlot.get(pr.getQuestion());
@@ -257,9 +250,9 @@ public class Frame extends JFrame {
 
 
     /*
-     * This method identifies the number of questions and possible options from the "write your own" UI.
-     * It validates the input and, if valid, calls TelegramBot.sendPoll for each question.
-     */
+    This method identifies the number of questions and possible options from the "write your own" UI.
+    It validates the input and, if valid, calls TelegramBot.sendPoll for each question.
+    */
     private void publishPoll() {
         System.out.println("Reached the method from the Frame class.");
 
@@ -283,14 +276,12 @@ public class Frame extends JFrame {
         String q1o4 = this.questionPanelTop.getAnswer4().getText();
         List<String> question1Options = validateAnswerOptions(q1o1, q1o2, q1o3, q1o4);
         if (question1Options == null || question1Options.size() < 2) {
-            return; // stop – need at least two options
+            return;
         }
 
-        // Map question texts to slots BEFORE sending
         questionToSlot.clear();
         questionToSlot.put(question1, 1);
 
-        // If middle question exists, map it
         if (this.questionPanelMiddle.isAdditionalQuestion()) {
             String q2 = this.questionPanelMiddle.getPollQuestion().getText();
             if (validatePollInput(q2)) {
@@ -298,7 +289,6 @@ public class Frame extends JFrame {
             }
         }
 
-        // If bottom question exists, map it
         if (this.questionPanelBottom.isAdditionalQuestion()) {
             String q3 = this.questionPanelBottom.getPollQuestion().getText();
             if (validatePollInput(q3)) {
@@ -306,7 +296,7 @@ public class Frame extends JFrame {
             }
         }
 
-        // move to results panel once Q1 is confirmed valid
+        // move to results panel once Q1 is confirmed valid.
         moveToResultPanel();
 
         // what to do after delay (or immediately): send Q1, then optional Q2/Q3
@@ -314,7 +304,6 @@ public class Frame extends JFrame {
             this.bot.sendPoll(question1, question1Options);
             scheduleShowBackButton();
 
-            // Try send middle and bottom if exist
             trySendFromPanel(this.questionPanelMiddle);
             trySendFromPanel(this.questionPanelBottom);
         };

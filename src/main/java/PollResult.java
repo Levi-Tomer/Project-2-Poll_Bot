@@ -9,13 +9,13 @@ import java.util.List;
 public class PollResult {
     private final String pollId;
     private String question;
-    private final List<String> optionTexts;  // לפי הסדר של טלגרם
-    private final List<Integer> counts;      // מספר מצביעים לכל אפשרות (אותו סדר)
+    private final List<String> optionTexts;
+    private final List<Integer> counts;
     private int totalVoters;
     private boolean closed;
     private Instant updatedAt;
 
-    /** בנאי "שלד" בזמן שליחה (יש לנו את השאלה והאופציות, עדיין אין ספירות) */
+    // Constructor......................................................................................................
     public PollResult(String pollId, String question, List<String> optionTexts) {
         this.pollId = pollId;
         this.question = question;
@@ -26,7 +26,7 @@ public class PollResult {
         this.updatedAt = Instant.now();
     }
 
-    /** יצירה מעדכון Poll מלא (למשל כשסקר נסגר) */
+    // Methods..........................................................................................................
     public static PollResult fromPoll(Poll poll) {
         List<String> texts = new ArrayList<>();
         List<Integer> cnts = new ArrayList<>();
@@ -44,7 +44,6 @@ public class PollResult {
         return pr;
     }
 
-    /** עדכון האובייקט מעדכון Poll (לרוב כשנסגר) */
     public void updateFromPoll(Poll poll) {
         this.question = poll.getQuestion();
         this.counts.clear();
@@ -56,7 +55,6 @@ public class PollResult {
         this.updatedAt = Instant.now();
     }
 
-    /** אחוזים לכל אופציה */
     public List<Double> getPercentages() {
         List<Double> pct = new ArrayList<>(counts.size());
         for (int c : counts) {
@@ -65,12 +63,32 @@ public class PollResult {
         return pct;
     }
 
-    // Getters
-    public String getPollId() { return pollId; }
-    public String getQuestion() { return question; }
-    public List<String> getOptionTexts() { return Collections.unmodifiableList(optionTexts); }
-    public List<Integer> getCounts() { return Collections.unmodifiableList(counts); }
-    public int getTotalVoters() { return totalVoters; }
-    public boolean isClosed() { return closed; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    // Getters & Setters................................................................................................
+    public String getPollId() {
+        return pollId;
+
+    }
+    public String getQuestion() {
+        return question;
+    }
+
+    public List<String> getOptionTexts() {
+        return Collections.unmodifiableList(optionTexts);
+    }
+
+    public List<Integer> getCounts() {
+        return Collections.unmodifiableList(counts);
+    }
+
+    public int getTotalVoters() {
+        return totalVoters;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 }

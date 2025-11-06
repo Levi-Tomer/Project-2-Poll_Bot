@@ -22,14 +22,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Map<String, String> pollIdsMap = new HashMap<>();
     private final Map<String, java.util.List<PollMessageRef>> campaigns = new java.util.concurrent.ConcurrentHashMap<>();
 
-
-    // === ADDED: שדה מרכזי לשמירת תוצאות סקרים לפי pollId ===
     private final Map<String, PollResult> polls = new ConcurrentHashMap<>();
 
     // Constructor......................................................................................................
-    public TelegramBot() { }
+    public TelegramBot() {
 
-    // toString.........................................................................................................
+    }
 
     // Methods..........................................................................................................
     public void sendPoll(String question, List<String> options) {
@@ -39,11 +37,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         SendPoll sendPoll = new SendPoll();
         sendPoll.setQuestion(question);
         sendPoll.setOptions(options);
-        sendPoll.setIsAnonymous(true);        // עובד גם באנונימי
+        sendPoll.setIsAnonymous(true);
         sendPoll.setAllowMultipleAnswers(false);
         sendPoll.setOpenPeriod(60 * 5);
 
-        // רשימת ההודעות של הקמפיין הזה (לפי טקסט השאלה)
         java.util.List<PollMessageRef> campaign = campaigns.computeIfAbsent(
                 question, q -> new java.util.concurrent.CopyOnWriteArrayList<>());
 
@@ -61,13 +58,10 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                 System.out.println("pollId: " + pollId);
 
-                // אופציונלי: question->pollId (אצלך היה ממילא)
                 pollIdsMap.put(question, pollId);
 
-                // שלד תוצאות
                 polls.put(pollId, new PollResult(pollId, qText, options));
 
-                // שמירה לקמפיין (נזדקק לזה כדי לסגור עם StopPoll)
                 campaign.add(new PollMessageRef(pollId, chatId, messageId));
 
             } catch (TelegramApiException e) {
@@ -76,17 +70,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-
-    // === UPDATED: במקום רק להדפיס, לעדכן את מודל התוצאות ===
     private void onPollClosed(Poll poll) {
         String pollId = poll.getId();
         String question = poll.getQuestion();
         Integer totalVoters = poll.getTotalVoterCount();
 
-        // עדכון/יצירה של PollResult ממפת התוצאות
         polls.compute(pollId, (id, existing) -> {
             if (existing == null) {
-                // אם משום מה לא שמרנו "שלד" קודם (או שהשרת שלח פול סגור ראשון) – צור מלא מה- Poll
                 PollResult pr = PollResult.fromPoll(poll);
                 logPoll(pr);
                 return pr;
@@ -98,7 +88,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         });
     }
 
-    // הדפסת לוג נוחה (רק להמחשה)
     private void logPoll(PollResult pr) {
         System.out.println("==== Poll closed ====");
         System.out.println("poll_id: " + pr.getPollId());
@@ -131,23 +120,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * סוגר את כל ה-poll-ים של השאלה הנתונה כאשר "כל המשתמשים ענו":
-     * ההגדרה כאן: בכל poll פרטי (נשלח לכל מנוי) יש לפחות מצביע 1.
-     */
     private void tryCloseCampaignWhenAllAnswered(String question) {
         java.util.List<PollMessageRef> refs = campaigns.get(question);
         if (refs == null || refs.isEmpty()) return;
 
-        // האם בכל poll של הקמפיין יש לפחות מצביע אחד?
         for (PollMessageRef ref : refs) {
             PollResult pr = polls.get(ref.pollId);
             if (pr == null || pr.getTotalVoters() < 1) {
-                return; // מישהו עדיין לא ענה – נצא בשקט
+                return;
             }
         }
 
-        // כולם ענו → נסגור את כל הפול'ים שעוד פתוחים
         for (PollMessageRef ref : refs) {
             if (ref.closed) continue;
             try {
@@ -162,7 +145,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
         }
     }
-
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -215,17 +197,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                     // סגור: הזרימה הקיימת שלך
                     onPollClosed(poll);
                 } else {
-                    // ===== ADDED: נסה לסגור את הקמפיין אם "כולם ענו" =====
                     tryCloseCampaignWhenAllAnswered(poll.getQuestion());
                 }
-
-                // (לא חובה, אבל אם תרצה להאיץ את הבדיקה גם על poll_answer בודד, אפשר להוסיף:)
-            } else if (update.hasPollAnswer()) {
-                // אופציונלי: כשמגיעה תשובה, נבדוק אם כולם כבר ענו
-                // tryCloseCampaignWhenAllAnswered(update.getPollAnswer().getPollId() ... ) // אם שומרים question לפי pollId
-                // או אם אתה שומר question ↔ pollId מראש, אפשר לשחזר את ה-question ולקרוא לפונקציה.
             }
-
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
@@ -241,24 +215,25 @@ public class TelegramBot extends TelegramLongPollingBot {
         return "8260282863:AAE9CpomVzWNTKY-U7cnJjh5mNJddsHdH5w";
     }
 
-    // Getters & Setters................................................................................................
-    public Set<Long> getSubscribers() { return subscribers; }
+    public Set<Long> getSubscribers() {
+        return subscribers;
+    }
+    public PollResult getPoll(String pollId) {
+        return polls.get(pollId);
+    }
+    public Map<String, PollResult> getAllPolls() {
+        return Map.copyOf(polls);
+    }
 
-    // === ADDED: גישה לתוצאות לשימוש חיצוני (נחבר ל-Frame בשלב הבא) ===
-    public PollResult getPoll(String pollId) { return polls.get(pollId); }
-    public Map<String, PollResult> getAllPolls() { return Map.copyOf(polls); }
-
-    // === ADDED: מודל תוצאות פנימי (POJO) ===
     public static class PollResult {
         private final String pollId;
         private String question;
-        private final List<String> optionTexts;  // לפי סדר טלגרם
-        private final List<Integer> counts;      // ספירת מצביעים לכל אופציה
+        private final List<String> optionTexts;
+        private final List<Integer> counts;
         private int totalVoters;
         private boolean closed;
         private Instant updatedAt;
 
-        /** שלד בזמן שליחה */
         public PollResult(String pollId, String question, List<String> optionTexts) {
             this.pollId = pollId;
             this.question = question;
@@ -269,7 +244,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             this.updatedAt = Instant.now();
         }
 
-        /** בנייה מלאה מעדכון Poll (לרוב בסגירה) */
         public static PollResult fromPoll(Poll poll) {
             List<String> texts = new java.util.ArrayList<>();
             List<Integer> cnts = new java.util.ArrayList<>();
@@ -286,7 +260,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             return pr;
         }
 
-        /** עדכון האובייקט מעדכון Poll */
         public void updateFromPoll(Poll poll) {
             this.question = poll.getQuestion();
             this.counts.clear();
@@ -298,7 +271,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             this.updatedAt = Instant.now();
         }
 
-        /** אחוזים לכל אופציה */
         public List<Double> getPercentages() {
             List<Double> pct = new java.util.ArrayList<>(counts.size());
             for (int c : counts) {
@@ -307,13 +279,33 @@ public class TelegramBot extends TelegramLongPollingBot {
             return pct;
         }
 
-        // Getters
-        public String getPollId() { return pollId; }
-        public String getQuestion() { return question; }
-        public List<String> getOptionTexts() { return java.util.Collections.unmodifiableList(optionTexts); }
-        public List<Integer> getCounts() { return java.util.Collections.unmodifiableList(counts); }
-        public int getTotalVoters() { return totalVoters; }
-        public boolean isClosed() { return closed; }
-        public Instant getUpdatedAt() { return updatedAt; }
+        // Getters & Setters................................................................................................
+        public String getPollId() {
+            return pollId;
+        }
+
+        public String getQuestion() {
+            return question;
+        }
+
+        public List<String> getOptionTexts() {
+            return java.util.Collections.unmodifiableList(optionTexts);
+        }
+
+        public List<Integer> getCounts() {
+            return java.util.Collections.unmodifiableList(counts);
+        }
+
+        public int getTotalVoters() {
+            return totalVoters;
+        }
+
+        public boolean isClosed() {
+            return closed;
+        }
+
+        public Instant getUpdatedAt() {
+            return updatedAt;
+        }
     }
 }

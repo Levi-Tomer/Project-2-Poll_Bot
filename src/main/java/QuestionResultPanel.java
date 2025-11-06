@@ -10,10 +10,11 @@ public class QuestionResultPanel extends JPanel {
 
     // Constructor......................................................................................................
     public QuestionResultPanel(int y, String questionNumber) {
-        // Panel setup
+        // Setting up the panel:
         this.setBounds(0, y, Utils.WINDOW_WIDTH, Utils.QUESTION_PANEL_HEIGHT);
         this.setBackground(Color.WHITE);
         this.setLayout(null);
+        // Setting up the panel.
 
         // Question headline (static label "Question X:")
         questionHeadline = new JLabel("Question " + questionNumber + ":");
@@ -45,18 +46,10 @@ public class QuestionResultPanel extends JPanel {
     }
 
     // Methods..........................................................................................................
-
-    /** עדכון טקסט השאלה בראש הפאנל */
     public void setQuestionText(String text) {
         this.questionValue.setText(text != null ? text : "");
     }
 
-    /**
-     * עדכון תוצאות האופציות:
-     * optionTexts – טקסטי האופציות לפי הסדר
-     * counts      – מספר מצביעים לכל אופציה
-     * totalVoters – סה״כ מצביעים (לחישוב אחוזים)
-     */
     public void setResults(List<String> optionTexts, List<Integer> counts, int totalVoters) {
         for (int i = 0; i < 4; i++) {
             String text = (optionTexts != null && optionTexts.size() > i) ? optionTexts.get(i) : "—";
@@ -66,9 +59,20 @@ public class QuestionResultPanel extends JPanel {
         }
     }
 
-    // Getters (אם תרצה בעתיד)
-    public JLabel getQuestionHeadline() { return questionHeadline; }
-    public JLabel getQuestionValue() { return questionValue; }
-    public JLabel[] getOptionHeadlines() { return optionHeadlines; }
-    public JLabel[] getOptionValues() { return optionValues; }
+    // Getters & Setters................................................................................................
+    public JLabel getQuestionHeadline() {
+        return questionHeadline;
+    }
+
+    public JLabel getQuestionValue() {
+        return questionValue;
+    }
+
+    public JLabel[] getOptionHeadlines() {
+        return optionHeadlines;
+    }
+
+    public JLabel[] getOptionValues() {
+        return optionValues;
+    }
 }
