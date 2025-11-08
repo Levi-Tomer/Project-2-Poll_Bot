@@ -259,6 +259,9 @@ public class Frame extends JFrame {
             });
 
             shownQuestions.add(question);
+            if (!questionToSlot.isEmpty() && shownQuestions.size() == questionToSlot.size()) {
+                SwingUtilities.invokeLater(this::showResultBackButtonWhenAnswered);
+            }
             System.out.println("[FRAME] rendered aggregated results for question: " + question);
         }
     }
