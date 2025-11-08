@@ -59,6 +59,13 @@ public class QuestionResultPanel extends JPanel {
         }
     }
 
+    public void clear() {
+        setQuestionText("");
+        for (int i = 0; i < 4; i++) {
+            optionValues[i].setText("—");
+        }
+    }
+
     // Getters & Setters................................................................................................
     public JLabel getQuestionHeadline() {
         return questionHeadline;

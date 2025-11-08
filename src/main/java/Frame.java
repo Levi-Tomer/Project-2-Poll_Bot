@@ -88,6 +88,7 @@ public class Frame extends JFrame {
     }
 
     private void moveToResultPanel() {
+        this.resultPanel.clearAll();
         this.resultPanel.setVisible(true);
         this.questionPanelTop.setVisible(false);
         this.questionPanelMiddle.setVisible(false);
@@ -108,6 +109,7 @@ public class Frame extends JFrame {
         this.menuPanel.setVisible(true);
         this.resultPanel.setVisible(false);
         stopResultsWatcher();
+        this.resultPanel.clearAll();
     }
 
     private boolean validatePollInput(String text) {
@@ -202,7 +204,6 @@ public class Frame extends JFrame {
         Map<String, TelegramBot.PollResult> all = bot.getAllPolls();
         if (all == null || all.isEmpty()) return;
 
-        // אגרגציה לפי טקסט השאלה
         Map<String, AggregatedResult> byQuestion = new HashMap<>();
 
         for (TelegramBot.PollResult pr : all.values()) {
@@ -222,7 +223,7 @@ public class Frame extends JFrame {
                     q -> new AggregatedResult(optionTexts, n));
 
             for (int i = 0; i < n; i++) {
-                agg.counts[i] += counts.get(i); // חיבור קולות מכל pollId
+                agg.counts[i] += counts.get(i);
             }
             agg.totalVoters += pr.getTotalVoters();
         }
@@ -233,18 +234,15 @@ public class Frame extends JFrame {
             String question = entry.getKey();
             AggregatedResult agg = entry.getValue();
 
-            // כבר הצגנו את השאלה הזו? דלג
             if (shownQuestions.contains(question)) {
                 continue;
             }
 
             Integer slot = questionToSlot.get(question);
             if (slot == null) {
-                System.out.println("[FRAME] No slot mapping for question: " + question);
                 continue;
             }
 
-            // נשתמש בטקסט השאלה כמזהה לוגי פנימי ל-ResultPanel
             String key = question;
 
             SwingUtilities.invokeLater(() -> {
@@ -262,7 +260,6 @@ public class Frame extends JFrame {
             if (!questionToSlot.isEmpty() && shownQuestions.size() == questionToSlot.size()) {
                 SwingUtilities.invokeLater(this::showResultBackButtonWhenAnswered);
             }
-            System.out.println("[FRAME] rendered aggregated results for question: " + question);
         }
     }
 

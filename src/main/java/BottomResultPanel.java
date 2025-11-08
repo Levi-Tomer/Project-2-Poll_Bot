@@ -36,6 +36,10 @@ public class BottomResultPanel extends JPanel {
     // compareTo........................................................................................................
 
     // Methods..........................................................................................................
+    public void resetToInitial() {
+        backButton.setVisible(false);
+        instructions.setVisible(true);
+    }
 
     // Getters & Setters................................................................................................
     public JButton getBackButton() {

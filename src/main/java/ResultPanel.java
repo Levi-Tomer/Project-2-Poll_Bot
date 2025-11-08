@@ -64,6 +64,16 @@ public class ResultPanel extends JPanel {
         repaint();
     }
 
+    public void clearAll() {
+        pollIdToPanel.clear();
+        if (top != null) top.clear();
+        if (middle != null) middle.clear();
+        if (bottom != null) bottom.clear();
+        if (bottomResultPanel != null) bottomResultPanel.resetToInitial();
+        revalidate();
+        repaint();
+    }
+
     // Getters & Setters................................................................................................
     public QuestionResultPanel getTop() {
         return top;
