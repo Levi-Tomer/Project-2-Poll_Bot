@@ -150,4 +150,32 @@ public class DefaultPollQuestionPanel extends JPanel {
     public boolean isPossibleAnswer4() {
         return possibleAnswer4;
     }
+
+    public void setPollQuestion(JTextField pollQuestion) {
+        this.pollQuestion = pollQuestion;
+    }
+
+    public void setAnswer1(JTextField answer1) {
+        this.answer1 = answer1;
+    }
+
+    public void setAnswer2(JTextField answer2) {
+        this.answer2 = answer2;
+    }
+
+    public void setAnswer3(JTextField answer3) {
+        this.answer3 = answer3;
+    }
+
+    public void setAnswer4(JTextField answer4) {
+        this.answer4 = answer4;
+    }
+
+    public void setPossibleAnswer3(boolean possibleAnswer3) {
+        this.possibleAnswer3 = possibleAnswer3;
+    }
+
+    public void setPossibleAnswer4(boolean possibleAnswer4) {
+        this.possibleAnswer4 = possibleAnswer4;
+    }
 }

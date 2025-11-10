@@ -8,7 +8,9 @@ public class Frame extends JFrame {
     private AdditionalPollQuestionPanel questionPanelMiddle;
     private AdditionalPollQuestionPanel questionPanelBottom;
     private BottomWritePollPanel bottomPollCreationPanel;
+    private ChatGPTPanel chatGPTPanel;
     private ResultPanel resultPanel;
+    private GPTResponseConversion gptResponseConversion;
 
     private final Map<String, Integer> questionToSlot = new HashMap<>();
 
@@ -16,11 +18,13 @@ public class Frame extends JFrame {
 
     private Timer resultsWatcher;
     private final TelegramBot bot;
+    private ChatGPTApi chatGPTApi;
 
     // Constructor......................................................................................................
     public Frame(TelegramBot bot) {
         super("Polls For Telegram Bot");
         this.bot = bot;
+        this.chatGPTApi = new ChatGPTApi();
 
         // Setting up the window:
         this.setSize(Utils.WINDOW_WIDTH, Utils.WINDOW_HEIGHT);
@@ -37,6 +41,7 @@ public class Frame extends JFrame {
 
         // Write-poll UI:
         this.questionPanelTop = new DefaultPollQuestionPanel();
+        this.chatGPTPanel = new ChatGPTPanel();
         this.questionPanelMiddle = new AdditionalPollQuestionPanel(Utils.QUESTION_PANEL_HEIGHT);
         this.questionPanelBottom = new AdditionalPollQuestionPanel(Utils.QUESTION_PANEL_HEIGHT * 2);
         this.bottomPollCreationPanel = new BottomWritePollPanel();
@@ -47,12 +52,14 @@ public class Frame extends JFrame {
         this.questionPanelBottom.setVisible(false);
         this.bottomPollCreationPanel.setVisible(false);
         this.resultPanel.setVisible(false);
+        this.chatGPTPanel.setVisible(false);
 
         this.add(questionPanelTop);
         this.add(questionPanelMiddle);
         this.add(questionPanelBottom);
         this.add(bottomPollCreationPanel);
         this.add(resultPanel);
+        this.add(chatGPTPanel);
 
         // Listeners:
         this.menuPanel.getWritePollButton().addActionListener(e -> moveToWritePollInterface());
@@ -61,6 +68,11 @@ public class Frame extends JFrame {
 
         this.bottomPollCreationPanel.getBackButton().addActionListener(e -> moveBackToMainMenuFromWritePollInterface());
         this.bottomPollCreationPanel.getPublishButton().addActionListener(e -> publishPoll());
+
+        this.chatGPTPanel.getBottomWritePollPanel().getBackButton().addActionListener(e -> moveBackToMainMenuFromGPTPollInterface());
+        this.chatGPTPanel.getBottomWritePollPanel().getPublishButton().addActionListener(e -> {
+            handleChatGPTPollPublish();
+        });
 
         this.resultPanel.getBottomResultPanel().getBackButton().addActionListener(e -> moveBackToMainMenuFromResultPanel());
     }
@@ -77,12 +89,14 @@ public class Frame extends JFrame {
     }
 
     private void moveToGptPollInterface() {
-        if (this.bot.getSubscribers().size() < 3) {
+        if(false){
+//        if (this.bot.getSubscribers().size() < 3) {
             JOptionPane.showMessageDialog(this,
                     "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
         } else {
             this.menuPanel.setVisible(false);
+            this.chatGPTPanel.setVisible(true);
             // TODO: Add ChatGPT poll creation interface
         }
     }
@@ -102,6 +116,11 @@ public class Frame extends JFrame {
         this.questionPanelMiddle.setVisible(false);
         this.questionPanelBottom.setVisible(false);
         this.bottomPollCreationPanel.setVisible(false);
+        this.menuPanel.setVisible(true);
+    }
+
+    private void moveBackToMainMenuFromGPTPollInterface() {
+        this.chatGPTPanel.setVisible(false);
         this.menuPanel.setVisible(true);
     }
 
@@ -281,6 +300,11 @@ public class Frame extends JFrame {
         }
     }
 
+    private void receiveSubject (){
+        String subject = this.chatGPTPanel.getSubject().getText();
+
+    }
+
     private void publishPoll() {
         System.out.println("Reached the method from the Frame class.");
 
@@ -344,4 +368,120 @@ public class Frame extends JFrame {
             continueFlow.run();
         }
     }
+
+    private void publishPollFromChatGPT(GPTResponseConversion pollSet) {
+        System.out.println("Reached the publishPollFromChatGPT() method.");
+
+        // בדיקה בסיסית שהתקבלו שאלות
+        if (pollSet == null) {
+            System.err.println("pollSet is null — cannot send polls.");
+            return;
+        }
+
+        // ניקוי מצבים קודמים
+        questionToSlot.clear();
+        shownQuestions.clear();
+
+        // מיפוי של כל שאלה למיקום שלה בתצוגת התוצאות
+        if (pollSet.getQuestion1() != null) {
+            questionToSlot.put(pollSet.getQuestion1(), 1);
+        }
+        if (pollSet.getQuestion2() != null) {
+            questionToSlot.put(pollSet.getQuestion2(), 2);
+        }
+        if (pollSet.getQuestion3() != null) {
+            questionToSlot.put(pollSet.getQuestion3(), 3);
+        }
+
+        // מעבר למסך התוצאות
+        moveToResultPanel();
+
+        // === שליחה בפועל של הסקרים ===
+        Runnable continueFlow = () -> {
+            if (pollSet.getQuestion1() != null && !pollSet.getOptions1().isEmpty()) {
+                bot.sendPoll(pollSet.getQuestion1(), pollSet.getOptions1());
+            }
+
+            if (pollSet.getQuestion2() != null && !pollSet.getOptions2().isEmpty()) {
+                bot.sendPoll(pollSet.getQuestion2(), pollSet.getOptions2());
+            }
+
+            if (pollSet.getQuestion3() != null && !pollSet.getOptions3().isEmpty()) {
+                bot.sendPoll(pollSet.getQuestion3(), pollSet.getOptions3());
+            }
+
+            scheduleShowBackButton(); // להציג כפתור חזרה אחרי פרק זמן
+        };
+
+        // כרגע אין עיכוב כמו בפרסום ידני, אבל אפשר להחזיר את זה אם תרצי
+        continueFlow.run();
+    }
+
+    private void handleChatGPTPollPublish() {
+        System.out.println("User clicked Publish poll (ChatGPT mode)");
+
+        // 1️⃣ קבלת הנושא מהפאנל
+        String topic = this.chatGPTPanel.getSubject().getText().trim();
+        if (topic.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a topic first.", "Missing topic", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 2️⃣ הצגת הודעת טעינה
+        JOptionPane.showMessageDialog(this, "Generating poll from ChatGPT...\nThis may take a few seconds.", "Please wait", JOptionPane.INFORMATION_MESSAGE);
+
+        // 3️⃣ קריאה ל-API
+        ChatGPTApi api = new ChatGPTApi();
+        boolean success = api.requestPollFromTopic(topic);
+
+        if (!success) {
+            JOptionPane.showMessageDialog(this, "Failed to generate poll from ChatGPT.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 4️⃣ קבלת התגובה שהגיעה מה-API (ב-JSON)
+        String jsonResponse = api.getJsonResponse(); // נוסיף getter לזה (הסבר בשלב הבא)
+
+        // 5️⃣ המרה של ה-JSON לשאלות ואופציות
+        GPTResponseConversion pollSet = new GPTResponseConversion(jsonResponse);
+
+        //.......................................................................................................
+        // Delay (minutes)
+
+        // Question 1 (mandatory)
+        String q1 = pollSet.getQuestion1();
+        if (!validatePollInput(q1)) {
+            return;
+        }
+
+        List<String> q1o = pollSet.getOptions1();
+
+        questionToSlot.clear();
+        shownQuestions.clear();
+
+        questionToSlot.put(q1, 1);
+
+        String q2 = pollSet.getQuestion2();
+        List<String> q2o = pollSet.getOptions2();
+
+        String q3 = pollSet.getQuestion3();
+        List<String> q3o = pollSet.getOptions3();
+
+        moveToResultPanel();
+
+        this.bot.sendPoll(q1, q1o);
+        this.bot.sendPoll(q2, q2o);
+        this.bot.sendPoll(q3, q3o);
+
+        scheduleShowBackButton();
+
+        // 6️⃣ פרסום הסקרים לכל המנויים
+        publishPollFromChatGPT(pollSet);
+    }
+
+
+
+
+
+
 }
