@@ -79,25 +79,27 @@ public class Frame extends JFrame {
 
     // Methods..........................................................................................................
     private void moveToWritePollInterface() {
-        // כאן בתרגיל האמיתי צריך לבדוק מינימום 3 נרשמים
-        // if (this.bot.getSubscribers().size() < 3) { ... }
+        if(this.bot.getSubscribers().size() < 3) {
+            JOptionPane.showMessageDialog(this,
+                    "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
+                    "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
+        } else {
         this.menuPanel.setVisible(false);
         this.questionPanelTop.setVisible(true);
         this.questionPanelMiddle.setVisible(true);
         this.questionPanelBottom.setVisible(true);
         this.bottomPollCreationPanel.setVisible(true);
+        }
     }
 
     private void moveToGptPollInterface() {
-        if(false){
-//        if (this.bot.getSubscribers().size() < 3) {
+        if(this.bot.getSubscribers().size() < 3){
             JOptionPane.showMessageDialog(this,
                     "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
         } else {
             this.menuPanel.setVisible(false);
             this.chatGPTPanel.setVisible(true);
-            // TODO: Add ChatGPT poll creation interface
         }
     }
 
