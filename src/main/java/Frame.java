@@ -81,7 +81,7 @@ public class Frame extends JFrame {
     private void moveToWritePollInterface() {
         if(this.bot.getSubscribers().size() < 3) {
             JOptionPane.showMessageDialog(this,
-                    "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
+                    "Change condition in Frame class, line 82 to false.\nYou need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
         } else {
         this.menuPanel.setVisible(false);
@@ -95,7 +95,7 @@ public class Frame extends JFrame {
     private void moveToGptPollInterface() {
         if(this.bot.getSubscribers().size() < 3){
             JOptionPane.showMessageDialog(this,
-                    "You need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
+                    "Change condition in Frame class, line 96 to false.\nYou need to have at least 3 subscribers to create a poll.\nCurrent subscribers: " + this.bot.getSubscribers().size(),
                     "Error: not enough subscribers", JOptionPane.PLAIN_MESSAGE);
         } else {
             this.menuPanel.setVisible(false);
